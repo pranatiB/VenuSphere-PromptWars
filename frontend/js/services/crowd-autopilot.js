@@ -9,8 +9,7 @@
  * consumed by the Concierge UI and Dashboard.
  */
 
-import { fetchDoc, subscribeToCollection } from '/js/services/firebase-client.js';
-import { getCrowdData, getQueueData } from '/js/services/api-client.js';
+import { subscribeToCollection } from '/js/services/firebase-client.js';
 
 // ── Phase-Aware Prediction Templates ──
 // Each phase produces a CURATED set of diverse predictions, not generic spam.
@@ -117,11 +116,15 @@ let _tickInterval = null;
 let _unsubs = [];
 let _listeners = [];
 let _phaseStartTime = Date.now();
+let _started = false;
 
 /**
  * Start the Autopilot engine.
  */
 export function startAutopilot() {
+  if (_started) return;
+  _started = true;
+
   const unsubCrowd = subscribeToCollection('crowd_density', (items) => {
     items.forEach(item => {
       _zoneDensities[item.zone_id] = {
@@ -162,8 +165,10 @@ export function startAutopilot() {
  */
 export function stopAutopilot() {
   if (_tickInterval) clearInterval(_tickInterval);
+  _tickInterval = null;
   _unsubs.forEach(fn => fn());
   _unsubs = [];
+  _started = false;
 }
 
 /**
