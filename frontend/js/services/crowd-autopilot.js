@@ -9,7 +9,8 @@
  * consumed by the Concierge UI and Dashboard.
  */
 
-import { subscribeToCollection } from './firebase-client.js';
+import { fetchDoc, subscribeToCollection } from '/js/services/firebase-client.js';
+import { getCrowdData, getQueueData } from '/js/services/api-client.js';
 
 // ── Phase-Aware Prediction Templates ──
 // Each phase produces a CURATED set of diverse predictions, not generic spam.
@@ -208,6 +209,10 @@ export function onPrediction(fn) {
 
 // ── Core Prediction Engine ──
 
+/**
+ * Run a full cycle of crowd density predictions based on the current phase.
+ * @private
+ */
 function _runPredictionCycle() {
   const templates = PHASE_PREDICTIONS[_phase] || PHASE_PREDICTIONS.pre_event;
   const predictions = [];
@@ -237,6 +242,11 @@ function _runPredictionCycle() {
   _emit(predictions);
 }
 
+/**
+ * Get the prediction density multiplier for the current active phase.
+ * @private
+ * @returns {number} Multiplier to apply to current density.
+ */
 function _phaseMultiplier() {
   const multipliers = {
     pre_event: 1.4, first_half: 1.6,
@@ -245,6 +255,12 @@ function _phaseMultiplier() {
   return multipliers[_phase] || 1.3;
 }
 
+/**
+ * Provide a realistic default density for a zone if live snapshot is empty.
+ * @private
+ * @param {string} zoneId - Zone ID string.
+ * @returns {number} Default baseline density.
+ */
 function _defaultDensity(zoneId) {
   // Realistic defaults when Firestore data hasn't arrived yet
   const defaults = {
@@ -255,6 +271,11 @@ function _defaultDensity(zoneId) {
   return defaults[zoneId] || 0.35;
 }
 
+/**
+ * Emit predictions to internal listeners and general window custom events.
+ * @private
+ * @param {Array<Object>} predictions - Newly generated prediction objects.
+ */
 function _emit(predictions) {
   _predictions = predictions;
   _listeners.forEach(fn => fn(predictions));

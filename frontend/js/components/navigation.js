@@ -3,9 +3,9 @@
  * Crowd-aware zone-to-zone navigation with Google Maps and step-by-step directions.
  */
 
-import { getRoute } from '../services/api-client.js';
-import { loadGoogleMaps, initMap, renderRoute, clearRoute } from '../services/maps-client.js';
-import { announce, showToast } from '../utils/a11y.js';
+import { getRoute } from '/js/services/api-client.js';
+import { loadGoogleMaps, initMap, renderRoute, clearRoute } from '/js/services/maps-client.js';
+import { announce, showToast } from '/js/utils/a11y.js';
 
 let _root = null;
 let _map = null;

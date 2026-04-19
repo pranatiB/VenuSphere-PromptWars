@@ -4,8 +4,9 @@
  * so the frontend works without the Google Cloud Function backend.
  */
 
-import { initFirebase, fetchDoc } from './firebase-client.js';
+import { initFirebase, fetchDoc, getIdToken } from '/js/services/firebase-client.js';
 import { collection, getDocs, doc, getDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getRecaptchaToken } from '/js/utils/recaptcha.js';
 
 export async function _getCurrentPhase() {
   const sum = await fetchDoc('crowd_summary', 'live');
@@ -103,17 +104,42 @@ export async function getStallQueue(stallId) {
   return q;
 }
 
-export async function subscribeQueueAlert(stallId, thresholdMinutes) {
-  // Mock success since we don't have the backend to process this
-  return { success: true };
+export async function subscribeQueueAlert(stall_id, threshold_minutes) {
+  const token = await getIdToken();
+  const res = await fetch(`/api/queue/${stall_id}/subscribe`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ threshold_minutes })
+  });
+  if (!res.ok) throw new Error('Subscription failed');
+  return res.json();
 }
 
 /* ── Chat API ── */
 
 export async function sendChatMessage(message, sessionId) {
-  // Intentionally throw so the frontend `assistant.js` catch block 
-  // runs its smarter `_demoResponse` keyword-based logic.
-  throw new Error('Backend disabled. Using local fallback.');
+  const token = await getIdToken();
+  if (!token) throw new Error('Not authenticated');
+
+  const recaptchaToken = await getRecaptchaToken('chat_send');
+
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'X-Recaptcha-Token': recaptchaToken
+    },
+    body: JSON.stringify({ message, session_id: sessionId })
+  });
+
+  if (!res.ok) {
+    throw new Error('Chat API failed');
+  }
+  return res.json();
 }
 
 /* ── Schedule API ── */
@@ -139,31 +165,59 @@ export async function getAlerts() {
 
 /* ── Check-in API ── */
 
-export async function postCheckIn(zoneId) {
-  return { success: true };
+export async function postCheckIn(zone_id) {
+  const token = await getIdToken();
+  const res = await fetch('/api/checkin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ zone_id })
+  });
+  if (!res.ok) throw new Error('Check-in failed');
+  return res.json();
 }
 
 /* ── Preferences API ── */
 
 export async function getPreferences() {
-  return { preferences: {} };
+  const token = await getIdToken();
+  const res = await fetch('/api/preferences', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error('Failed to fetch preferences');
+  return res.json();
 }
 
 export async function savePreferences(prefs) {
-  return { success: true };
+  const token = await getIdToken();
+  const res = await fetch('/api/preferences', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(prefs)
+  });
+  if (!res.ok) throw new Error('Failed to save preferences');
+  return res.json();
 }
 
 /* ── Navigation API ── */
 
-export async function getRoute(fromZone, toZone, avoidCrowds = true) {
-  return {
-    from_zone: fromZone,
-    to_zone: toZone,
-    from_coords: {},
-    to_coords: {},
-    avoid_zones: [],
-    estimated_minutes: 5,
-  };
+export async function getRoute(from_zone, to_zone, avoid_crowds = true) {
+  const token = await getIdToken();
+  const res = await fetch('/api/navigate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ from_zone, to_zone, avoid_crowds })
+  });
+  if (!res.ok) throw new Error('Navigation API failed');
+  return res.json();
 }
 
 /* ── Announcements API ── */

@@ -7,8 +7,8 @@
  * Powered by Crowd Autopilot™ predictions.
  */
 
-import { onPrediction, getPredictions } from '../services/autopilot-engine.js';
-import { announce } from '../utils/a11y.js';
+import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js?v=20260420_FINAL';
+import { announce } from '/js/utils/a11y.js';
 
 let _container = null;
 let _dismissedIds = new Set();
@@ -45,6 +45,11 @@ export function destroyConcierge() {
   if (_container) _container.innerHTML = '';
 }
 
+/**
+ * Handle new predictions from Autopilot.
+ * @private
+ * @param {Array<Object>} predictions - List of active prediction objects.
+ */
 function _handlePredictions(predictions) {
   if (!_container) return;
 
@@ -79,6 +84,13 @@ function _handlePredictions(predictions) {
   });
 }
 
+/**
+ * Create a DOM element for a single nudge.
+ * @private
+ * @param {Object} prediction - Prediction data.
+ * @param {number} index - Position index for animation cascading.
+ * @returns {HTMLElement} The nudge DOM element.
+ */
 function _createNudge(prediction, index) {
   const nudge = document.createElement('div');
   nudge.className = `concierge-nudge nudge-${prediction.severity}`;
@@ -124,6 +136,12 @@ function _createNudge(prediction, index) {
   return nudge;
 }
 
+/**
+ * Dismiss a nudge and tracking its ID to prevent reappearance.
+ * @private
+ * @param {string} id - The unique prediction ID.
+ * @param {HTMLElement} el - The nudge element to remove.
+ */
 function _dismiss(id, el) {
   _dismissedIds.add(id);
   try {
@@ -133,6 +151,12 @@ function _dismiss(id, el) {
   setTimeout(() => el.remove(), 350);
 }
 
+/**
+ * Get the emoji icon for a prediction type.
+ * @private
+ * @param {Object} prediction - Prediction data.
+ * @returns {string} Emoji icon.
+ */
 function _getIcon(prediction) {
   switch (prediction.type) {
     case 'surge_warning': return '⚡';
@@ -143,16 +167,34 @@ function _getIcon(prediction) {
   }
 }
 
+/**
+ * Convert severity level into a numerical rank for sorting.
+ * @private
+ * @param {string} sev - Severity level ('critical', 'warning', 'info').
+ * @returns {number} Rank value (higher is more severe).
+ */
 function _severityRank(sev) {
   return { critical: 3, warning: 2, info: 1 }[sev] || 0;
 }
 
+/**
+ * Escape HTML in a string to prevent XSS.
+ * @private
+ * @param {string} str - Unsafe string.
+ * @returns {string} Escaped string.
+ */
 function _esc(str) {
   const div = document.createElement('div');
   div.textContent = str || '';
   return div.innerHTML;
 }
 
+/**
+ * Strip all HTML tags from a string.
+ * @private
+ * @param {string} str - String with potential HTML.
+ * @returns {string} Clean text.
+ */
 function _stripHtml(str) {
   return (str || '').replace(/<[^>]*>/g, '');
 }

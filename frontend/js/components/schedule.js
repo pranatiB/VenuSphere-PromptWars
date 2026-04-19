@@ -3,9 +3,10 @@
  * Event timeline, phase display, smart alerts, and announcement feed.
  */
 
-import { getSchedule } from '../services/api-client.js';
-import { subscribeToCollection } from '../services/firebase-client.js';
-import { announce } from '../utils/a11y.js';
+import { getSchedule, getAnnouncements } from '/js/services/api-client.js';
+import { subscribeToCollection } from '/js/services/firebase-client.js';
+import { t } from '/js/utils/i18n.js';
+import { announce } from '/js/utils/a11y.js';
 
 let _root = null;
 let _unsub = null;

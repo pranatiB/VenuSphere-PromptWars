@@ -4,17 +4,20 @@
  * Handles offline fallback and push notification delivery.
  */
 
-const CACHE_VERSION = 'venusphere-v2';
+const CACHE_VERSION = 'venusphere-v_PERFECT_FINAL';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/css/styles.css',
+  '/js/config.prod.js',
   '/js/app.js',
   '/js/services/firebase-client.js',
   '/js/services/api-client.js',
   '/js/services/maps-client.js',
+  '/js/services/crowd-autopilot.js?v=FINAL_BEYOND_ALL_CACHE',
   '/js/utils/a11y.js',
   '/js/utils/i18n.js',
+  '/js/utils/recaptcha.js',
   '/js/components/dashboard.js',
   '/js/components/crowd-map.js',
   '/js/components/queue-tracker.js',
@@ -22,6 +25,7 @@ const STATIC_ASSETS = [
   '/js/components/schedule.js',
   '/js/components/navigation.js',
   '/js/components/settings.js',
+  '/js/components/concierge.js',
   '/assets/locales/en.json',
   '/manifest.json',
 ];

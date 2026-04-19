@@ -1,4 +1,5 @@
 """Cloud Function HTTP entry points for the VenuSphere API.
+# pylint: disable=line-too-long
 
 All endpoints (except /api/health) require a valid Firebase Auth token
 in the Authorization: Bearer <token> header.
@@ -6,30 +7,10 @@ in the Authorization: Bearer <token> header.
 Rate limit: 30 requests per 60 seconds per authenticated user.
 """
 
-import json
 import os
 import uuid
-
-import firebase_admin
-from firebase_functions import https_fn
-from firebase_admin import firestore
 from flask import Request, Response, jsonify
-
-from services import (
-    crowd_service,
-    queue_service,
-    event_service,
-    assistant_service,
-    notification_service,
-    analytics_service,
-)
-from utils.security import (
-    validate_firebase_token,
-    extract_bearer_token,
-    sanitize_input,
-    check_rate_limit,
-    hash_uid,
-)
+from firebase_functions import https_fn
 
 
 _ALLOWED_ORIGINS = [
@@ -41,18 +22,21 @@ _ALLOWED_ORIGINS = [
 
 def _init_firebase() -> None:
     """Initialize Firebase Admin SDK once (lazy singleton)."""
-    if not firebase_admin._apps:
+    import firebase_admin
+    if not firebase_admin._apps:  # pylint: disable=protected-access
         firebase_admin.initialize_app()
 
 
 def _get_db():
     """Return the Firestore client, initializing Firebase if needed."""
+    from firebase_admin import firestore
     _init_firebase()
     return firestore.client()
 
 
 def _cors_headers(origin: str = None) -> dict:
     """Return CORS response headers restricted to the allowed domains."""
+    import os
     # Default to the primary production origin
     effective_origin = os.environ.get("CORS_ORIGIN", "https://venusphere-promptwars-apr2026.web.app")
 
@@ -76,6 +60,14 @@ def _authenticate(request: Request) -> tuple[str | None, Response | None]:
     Returns:
         (uid, None) on success, or (None, error_response) on failure.
     """
+    from utils.security import (
+        validate_firebase_token,
+        extract_bearer_token,
+        check_rate_limit,
+    )
+    from services import analytics_service
+    from utils.security import hash_uid
+
     origin = request.headers.get("Origin")
     token = extract_bearer_token(request.headers.get("Authorization", ""))
     if not token:
@@ -103,6 +95,9 @@ def venusphere_api(request: https_fn.Request) -> https_fn.Response:
     Returns:
         JSON HTTP response.
     """
+    from services import analytics_service
+    from utils.security import hash_uid
+
     origin = request.headers.get("Origin")
     if request.method == "OPTIONS":
         return ("", 204, _cors_headers(origin))
@@ -123,7 +118,7 @@ def venusphere_api(request: https_fn.Request) -> https_fn.Response:
     uid_hash = hash_uid(uid)
     try:
         return _dispatch(request, path, method, uid, uid_hash, db, origin)
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         analytics_service.log_api_error(path, str(exc), 500)
         return jsonify({"error": "Internal server error"}), 500, _cors_headers(origin)
 
@@ -137,6 +132,7 @@ def _dispatch(
     db,
     origin: str = None,
 ) -> Response:
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-return-statements,too-many-branches,too-many-statements,too-many-positional-arguments
     """Route request to the correct service handler.
 
     Args:
@@ -151,6 +147,16 @@ def _dispatch(
     Returns:
         JSON response tuple.
     """
+    from services import (
+        crowd_service,
+        queue_service,
+        event_service,
+        assistant_service,
+        analytics_service,
+    )
+    from utils.security import sanitize_input, hash_uid
+    from utils.recaptcha import verify_recaptcha
+
     headers = _cors_headers(origin)
     phase = event_service.get_current_phase(db)
 
@@ -186,6 +192,11 @@ def _dispatch(
         return jsonify({"success": True, "stall_id": stall_id, "threshold_minutes": threshold}), 200, headers
 
     if path == "/api/chat" and method == "POST":
+        recaptcha_token = request.headers.get("X-Recaptcha-Token", "")
+        is_human, score = verify_recaptcha(recaptcha_token, "chat_send")
+        if not is_human:
+            return jsonify({"error": "reCAPTCHA verification failed."}), 403, headers
+
         body = request.get_json(silent=True) or {}
         raw_message = body.get("message", "")
         message = sanitize_input(raw_message, max_len=500)
@@ -210,8 +221,7 @@ def _dispatch(
         zone_id = sanitize_input(body.get("zone_id", ""), max_len=50)
         if not zone_id:
             return jsonify({"error": "zone_id is required"}), 400, headers
-        from utils.security import hash_uid as h
-        success = crowd_service.process_checkin(zone_id, h(uid), phase, db)
+        success = crowd_service.process_checkin(zone_id, hash_uid(uid), phase, db)
         analytics_service.log_event(uid_hash, "checkin", {"zone_id": zone_id})
         return jsonify({"success": success}), 200, headers
 
@@ -264,5 +274,17 @@ def _dispatch(
     if path == "/api/announcements" and method == "GET":
         announcements = event_service.get_announcements(db)
         return jsonify({"announcements": announcements}), 200, headers
+
+    if path == "/api/translate" and method == "POST":
+        from utils.translate import translate_text
+        body = request.get_json(silent=True) or {}
+        text = body.get("text", "")
+        target_lang = sanitize_input(body.get("target_lang", "en"), max_len=10)
+        
+        if not text:
+            return jsonify({"error": "No text provided"}), 400, headers
+            
+        translated = translate_text(text, target_lang)
+        return jsonify({"text": translated}), 200, headers
 
     return jsonify({"error": "Not found"}), 404, headers

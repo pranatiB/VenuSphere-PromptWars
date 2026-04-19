@@ -3,9 +3,9 @@
  * Live wait time tracker for food stalls, restrooms, and merchandise.
  */
 
-import { getQueueData, subscribeQueueAlert } from '../services/api-client.js';
-import { subscribeToCollection } from '../services/firebase-client.js';
-import { announce, showToast } from '../utils/a11y.js';
+import { getQueueData } from '/js/services/api-client.js';
+import { subscribeToCollection } from '/js/services/firebase-client.js';
+import { announce, showToast } from '/js/utils/a11y.js';
 
 let _root = null;
 let _allQueues = [];

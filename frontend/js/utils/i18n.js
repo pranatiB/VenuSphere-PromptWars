@@ -3,9 +3,12 @@
  * Lightweight internationalisation: loads locale JSON, translates [data-i18n] elements.
  */
 
+import { getIdToken } from '/js/services/firebase-client.js';
+
 /** @type {{ [key: string]: string }} */
 let _translations = {};
 let _currentLocale = 'en';
+const _dynamicCache = new Map();
 
 const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'hi', 'zh'];
 
@@ -26,6 +29,36 @@ export async function setLocale(locale) {
   } catch {
     if (code !== 'en') await setLocale('en');
   }
+}
+
+/**
+ * Call the translation REST API.
+ */
+export async function translateWithGoogle(text, targetLang) {
+  if (targetLang === 'en' || !text) return text;
+  
+  const cacheKey = `${targetLang}_${text}`;
+  if (_dynamicCache.has(cacheKey)) return _dynamicCache.get(cacheKey);
+
+  try {
+    const token = await getIdToken();
+    const res = await fetch('/api/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify({ text, target_lang: targetLang })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      _dynamicCache.set(cacheKey, data.text);
+      return data.text;
+    }
+  } catch(e) {
+    console.warn("Dynamic translation failed:", e);
+  }
+  return text;
 }
 
 /**

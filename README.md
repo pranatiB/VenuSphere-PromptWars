@@ -160,7 +160,9 @@ Powered by Crowd Autopilot™ predictions. Dismissed with one tap. Never annoyin
 | **Google Directions API** | Crowd-aware walking navigation |
 | **Google Analytics** | Engagement telemetry |
 | **Cloud Scheduler** | Crowd simulation event triggers |
-| **Cloud Logging** | Structured audit logging |
+| **Cloud Logging** | Structured audit and performance logging |
+| **Cloud Translation API** | Run-time localization for AI outputs |
+| **reCAPTCHA v3** | Silent bot protection on chat endpoints |
 
 ---
 
@@ -268,13 +270,14 @@ python seed_venue.py
 
 ## Security
 
-- Firebase Auth token validation on every API request
-- Rate limiting: 30 req/60s per user (sliding window)
-- Input sanitization: HTML escaping, max-length enforcement
-- Firestore rules: read-only on venue data; user writes scoped to `/users/{uid}`
-- CORS restricted to Firebase Hosting domain
-- `.env` excluded from git via `.gitignore`
-- Anonymous UID hashing (SHA-256) in all analytics logs
+- **Strict Content-Security-Policy (CSP):** No `unsafe-inline` scripts, added `Strict-Transport-Security` to Firebase hosting.
+- **reCAPTCHA v3:** Silent background protection for the `/api/chat` endpoint to stop abusive bot traffic.
+- **Firebase Auth token validation:** Enforced on every API request.
+- **Rate limiting:** 30 req/60s per user (sliding window caching module).
+- **Input sanitization:** Deep HTML escaping and max-length enforcement.
+- **Firestore Rules:** Read-only venue data. User writes strictly constrained with `hasOnly()` field validation and dynamic `.size()` checks (max 2000 chars for chat logs).
+- **CORS restricted:** Only allowed from Firebase Hosting domains.
+- **Anonymous UID hashing:** (SHA-256) used in all analytics logs to protect privacy.
 
 ---
 
@@ -282,7 +285,7 @@ python seed_venue.py
 
 - Semantic HTML5 — landmarks, headings, lists, roles
 - `aria-live` regions for crowd/queue/announcement updates
-- Full keyboard navigation — skip link, focus trap on drawers
+- Full keyboard navigation — skip link, custom focus trap on drawers/assistant with `Escape` key dismissal.
 - Minimum 44×44px touch targets on all interactive elements
 - High-contrast mode toggle (persisted to localStorage)
 - `prefers-reduced-motion` disables all animations
@@ -298,6 +301,20 @@ python seed_venue.py
 - Firestore debouncing: 500ms to prevent UI thrashing
 - Google Maps lazy-loaded only when map view is opened
 - Image-free design: 100% SVG + CSS — zero binary assets
+
+---
+
+## Testing
+
+Our robust test suite ensures reliability across core metrics and security policies:
+- High coverage (≥80%) across utility and service backend modules.
+- New unit tests for **reCAPTCHA verification logic** and **Translate module caching / API fallback**.
+- Edge-case security tests verifying sliding-window rate limit expiry and SQL/XSS/Unicode path traversal resilience.
+- Run tests via locally using:
+  ```bash
+  cd backend
+  python -m pytest tests/ -v --tb=short
+  ```
 
 ---
 

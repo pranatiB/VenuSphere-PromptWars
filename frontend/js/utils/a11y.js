@@ -54,9 +54,10 @@ const FOCUSABLE_SELECTORS = [
 /**
  * Trap keyboard focus within an element (for modals and drawers).
  * @param {HTMLElement} container
+ * @param {() => void} [onEscape] Optional callback when Escape is pressed.
  * @returns {() => void} Function to release the trap.
  */
-export function trapFocus(container) {
+export function trapFocus(container, onEscape) {
   if (_focusTrapController) _focusTrapController.abort();
   _focusTrapController = new AbortController();
   const { signal } = _focusTrapController;
@@ -64,6 +65,11 @@ export function trapFocus(container) {
   const focusable = () => [...container.querySelectorAll(FOCUSABLE_SELECTORS)];
 
   const onKeyDown = (e) => {
+    if (e.key === 'Escape' && typeof onEscape === 'function') {
+      e.preventDefault();
+      onEscape();
+      return;
+    }
     if (e.key !== 'Tab') return;
     const items = focusable();
     if (!items.length) { e.preventDefault(); return; }
@@ -136,4 +142,29 @@ export function showToast(message, type = 'info', durationMs = 4000) {
     toast.style.transition = 'opacity 300ms';
     setTimeout(() => toast.remove(), 320);
   }, durationMs);
+}
+
+/**
+ * Check if the user prefers reduced motion.
+ * @returns {boolean}
+ */
+export function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Initialize skip link behavior to focus the main content area.
+ */
+export function initSkipLink() {
+  const skipLink = document.querySelector('.skip-link');
+  if (skipLink) {
+    skipLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const main = document.getElementById('main-content');
+      if (main) {
+        main.tabIndex = -1;
+        main.focus();
+      }
+    });
+  }
 }

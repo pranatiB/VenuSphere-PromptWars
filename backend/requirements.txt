@@ -4,4 +4,5 @@ firebase-functions==0.*
 flask==3.*
 google-cloud-aiplatform==1.*
 google-cloud-pubsub==2.*
+google-cloud-translate==3.*
 gunicorn==21.*

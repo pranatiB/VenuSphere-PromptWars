@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from models.event import SmartAlert, Announcement
+
 from utils.cache import get_cached, set_cached
 
 
@@ -144,6 +144,6 @@ def advance_phase(db: Any) -> str:
             "updated_at": datetime.now(timezone.utc),
         })
 
-    from utils.cache import invalidate
+    from utils.cache import invalidate  # pylint: disable=import-outside-toplevel
     invalidate("current_phase")
     return next_phase

@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from firebase_admin import firestore
+
 
 from utils.cache import get_cached, set_cached
 
@@ -123,9 +123,6 @@ def predict_density(zone_id: str, phase: str, minutes_ahead: int, db: Any) -> di
     current = get_zone_density(zone_id, phase, db)
     current_density = current.get("density", 0.5)
 
-    phase_order = ["pre_event", "first_half", "halftime", "second_half", "post_event"]
-    phase_idx = phase_order.index(phase) if phase in phase_order else 0
-
     adjustment = 0.0
     if phase == "first_half" and minutes_ahead >= 30:
         adjustment = 0.3 if zone_id in ("food_court_a", "food_court_b") else -0.1
@@ -147,7 +144,7 @@ def predict_density(zone_id: str, phase: str, minutes_ahead: int, db: Any) -> di
     }
 
 
-def process_checkin(zone_id: str, uid: str, phase: str, db: Any) -> bool:
+def process_checkin(zone_id: str, _uid: str, phase: str, db: Any) -> bool:
     """Process an anonymous user check-in to update zone density.
 
     Args:
