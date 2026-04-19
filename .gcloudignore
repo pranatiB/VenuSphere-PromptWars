@@ -1,0 +1,15 @@
+# GCloud ignore file — excludes files from Cloud Functions deployment
+.git
+.gitignore
+README.md
+*.md
+frontend/
+seed/
+.lighthouserc.json
+backend/tests/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+node_modules/

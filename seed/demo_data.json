@@ -1,0 +1,125 @@
+{
+  "venue": {
+    "id": "olympic_stadium",
+    "name": "Olympic Stadium",
+    "capacity": 60000,
+    "coordinates": { "lat": 51.5560, "lng": -0.2795 },
+    "address": "Wembley, London, HA9 0WS, UK"
+  },
+  "event": {
+    "id": "championship_final_2026",
+    "name": "Championship Final 2026",
+    "duration_minutes": 180,
+    "phases": [
+      { "id": "pre_event", "name": "Pre-Event", "duration_minutes": 90, "start_offset": -90 },
+      { "id": "first_half", "name": "First Half", "duration_minutes": 45, "start_offset": 0 },
+      { "id": "halftime", "name": "Half Time", "duration_minutes": 20, "start_offset": 45 },
+      { "id": "second_half", "name": "Second Half", "duration_minutes": 45, "start_offset": 65 },
+      { "id": "post_event", "name": "Post-Event", "duration_minutes": 60, "start_offset": 110 }
+    ]
+  },
+  "zones": [
+    { "id": "gate_north", "name": "Gate North", "type": "gate", "capacity": 8000, "coordinates": { "lat": 51.5600, "lng": -0.2795 }, "polygon": [{ "lat": 51.5598, "lng": -0.2810 }, { "lat": 51.5602, "lng": -0.2810 }, { "lat": 51.5602, "lng": -0.2780 }, { "lat": 51.5598, "lng": -0.2780 }] },
+    { "id": "gate_south", "name": "Gate South", "type": "gate", "capacity": 8000, "coordinates": { "lat": 51.5520, "lng": -0.2795 }, "polygon": [{ "lat": 51.5518, "lng": -0.2810 }, { "lat": 51.5522, "lng": -0.2810 }, { "lat": 51.5522, "lng": -0.2780 }, { "lat": 51.5518, "lng": -0.2780 }] },
+    { "id": "gate_east", "name": "Gate East", "type": "gate", "capacity": 6000, "coordinates": { "lat": 51.5560, "lng": -0.2740 }, "polygon": [{ "lat": 51.5550, "lng": -0.2750 }, { "lat": 51.5570, "lng": -0.2750 }, { "lat": 51.5570, "lng": -0.2730 }, { "lat": 51.5550, "lng": -0.2730 }] },
+    { "id": "gate_west", "name": "Gate West", "type": "gate", "capacity": 6000, "coordinates": { "lat": 51.5560, "lng": -0.2850 }, "polygon": [{ "lat": 51.5550, "lng": -0.2860 }, { "lat": 51.5570, "lng": -0.2860 }, { "lat": 51.5570, "lng": -0.2840 }, { "lat": 51.5550, "lng": -0.2840 }] },
+    { "id": "stand_north", "name": "North Stand", "type": "stand", "capacity": 15000, "coordinates": { "lat": 51.5585, "lng": -0.2795 }, "polygon": [{ "lat": 51.5580, "lng": -0.2830 }, { "lat": 51.5590, "lng": -0.2830 }, { "lat": 51.5590, "lng": -0.2760 }, { "lat": 51.5580, "lng": -0.2760 }] },
+    { "id": "stand_south", "name": "South Stand", "type": "stand", "capacity": 15000, "coordinates": { "lat": 51.5535, "lng": -0.2795 }, "polygon": [{ "lat": 51.5530, "lng": -0.2830 }, { "lat": 51.5540, "lng": -0.2830 }, { "lat": 51.5540, "lng": -0.2760 }, { "lat": 51.5530, "lng": -0.2760 }] },
+    { "id": "stand_east", "name": "East Stand", "type": "stand", "capacity": 10000, "coordinates": { "lat": 51.5560, "lng": -0.2755 }, "polygon": [{ "lat": 51.5545, "lng": -0.2765 }, { "lat": 51.5575, "lng": -0.2765 }, { "lat": 51.5575, "lng": -0.2745 }, { "lat": 51.5545, "lng": -0.2745 }] },
+    { "id": "stand_west", "name": "West Stand", "type": "stand", "capacity": 10000, "coordinates": { "lat": 51.5560, "lng": -0.2835 }, "polygon": [{ "lat": 51.5545, "lng": -0.2845 }, { "lat": 51.5575, "lng": -0.2845 }, { "lat": 51.5575, "lng": -0.2825 }, { "lat": 51.5545, "lng": -0.2825 }] },
+    { "id": "food_court_a", "name": "Food Court A", "type": "food_court", "capacity": 2000, "coordinates": { "lat": 51.5572, "lng": -0.2810 }, "polygon": [{ "lat": 51.5569, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2800 }, { "lat": 51.5569, "lng": -0.2800 }] },
+    { "id": "food_court_b", "name": "Food Court B", "type": "food_court", "capacity": 2000, "coordinates": { "lat": 51.5548, "lng": -0.2780 }, "polygon": [{ "lat": 51.5545, "lng": -0.2790 }, { "lat": 51.5551, "lng": -0.2790 }, { "lat": 51.5551, "lng": -0.2770 }, { "lat": 51.5545, "lng": -0.2770 }] },
+    { "id": "merchandise", "name": "Merchandise Area", "type": "merchandise", "capacity": 1500, "coordinates": { "lat": 51.5565, "lng": -0.2820 }, "polygon": [{ "lat": 51.5562, "lng": -0.2828 }, { "lat": 51.5568, "lng": -0.2828 }, { "lat": 51.5568, "lng": -0.2812 }, { "lat": 51.5562, "lng": -0.2812 }] },
+    { "id": "main_concourse", "name": "Main Concourse", "type": "concourse", "capacity": 5000, "coordinates": { "lat": 51.5560, "lng": -0.2795 }, "polygon": [{ "lat": 51.5545, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2770 }, { "lat": 51.5545, "lng": -0.2770 }] }
+  ],
+  "stalls": [
+    { "id": "stall_1", "name": "Olympic Burgers", "zone_id": "food_court_a", "type": "food", "cuisine": "burgers", "dietary": ["none"], "coordinates": { "lat": 51.5571, "lng": -0.2812 } },
+    { "id": "stall_2", "name": "Veggie Bites", "zone_id": "food_court_a", "type": "food", "cuisine": "vegan", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5573, "lng": -0.2808 } },
+    { "id": "stall_3", "name": "Pizza Palace", "zone_id": "food_court_a", "type": "food", "cuisine": "pizza", "dietary": ["vegetarian"], "coordinates": { "lat": 51.5570, "lng": -0.2816 } },
+    { "id": "stall_4", "name": "Halal Grill", "zone_id": "food_court_b", "type": "food", "cuisine": "grilled", "dietary": ["halal"], "coordinates": { "lat": 51.5547, "lng": -0.2782 } },
+    { "id": "stall_5", "name": "Noodle House", "zone_id": "food_court_b", "type": "food", "cuisine": "asian", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5549, "lng": -0.2778 } },
+    { "id": "stall_6", "name": "Beer Garden", "zone_id": "food_court_a", "type": "beverage", "cuisine": "beverages", "dietary": [], "coordinates": { "lat": 51.5574, "lng": -0.2804 } },
+    { "id": "stall_7", "name": "Smoothie Bar", "zone_id": "food_court_b", "type": "beverage", "cuisine": "beverages", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5546, "lng": -0.2786 } },
+    { "id": "stall_8", "name": "Merch Shop", "zone_id": "merchandise", "type": "merchandise", "cuisine": null, "dietary": [], "coordinates": { "lat": 51.5565, "lng": -0.2820 } }
+  ],
+  "restrooms": [
+    { "id": "wc_north_a", "name": "Restroom North A", "zone_id": "stand_north", "coordinates": { "lat": 51.5583, "lng": -0.2800 } },
+    { "id": "wc_north_b", "name": "Restroom North B", "zone_id": "gate_north", "coordinates": { "lat": 51.5599, "lng": -0.2792 } },
+    { "id": "wc_south_a", "name": "Restroom South A", "zone_id": "stand_south", "coordinates": { "lat": 51.5537, "lng": -0.2800 } },
+    { "id": "wc_south_b", "name": "Restroom South B", "zone_id": "gate_south", "coordinates": { "lat": 51.5521, "lng": -0.2792 } },
+    { "id": "wc_east", "name": "Restroom East", "zone_id": "stand_east", "coordinates": { "lat": 51.5560, "lng": -0.2752 } },
+    { "id": "wc_west", "name": "Restroom West", "zone_id": "stand_west", "coordinates": { "lat": 51.5560, "lng": -0.2842 } }
+  ],
+  "crowd_simulation": {
+    "phases": {
+      "pre_event": {
+        "gate_north": 0.75, "gate_south": 0.70, "gate_east": 0.65, "gate_west": 0.60,
+        "stand_north": 0.30, "stand_south": 0.25, "stand_east": 0.20, "stand_west": 0.20,
+        "food_court_a": 0.40, "food_court_b": 0.35, "merchandise": 0.55, "main_concourse": 0.50
+      },
+      "first_half": {
+        "gate_north": 0.15, "gate_south": 0.12, "gate_east": 0.10, "gate_west": 0.10,
+        "stand_north": 0.95, "stand_south": 0.95, "stand_east": 0.90, "stand_west": 0.90,
+        "food_court_a": 0.10, "food_court_b": 0.08, "merchandise": 0.05, "main_concourse": 0.12
+      },
+      "halftime": {
+        "gate_north": 0.05, "gate_south": 0.05, "gate_east": 0.05, "gate_west": 0.05,
+        "stand_north": 0.20, "stand_south": 0.20, "stand_east": 0.15, "stand_west": 0.15,
+        "food_court_a": 0.92, "food_court_b": 0.88, "merchandise": 0.70, "main_concourse": 0.80
+      },
+      "second_half": {
+        "gate_north": 0.08, "gate_south": 0.08, "gate_east": 0.06, "gate_west": 0.06,
+        "stand_north": 0.92, "stand_south": 0.92, "stand_east": 0.88, "stand_west": 0.88,
+        "food_court_a": 0.20, "food_court_b": 0.18, "merchandise": 0.10, "main_concourse": 0.15
+      },
+      "post_event": {
+        "gate_north": 0.85, "gate_south": 0.80, "gate_east": 0.70, "gate_west": 0.65,
+        "stand_north": 0.40, "stand_south": 0.45, "stand_east": 0.35, "stand_west": 0.30,
+        "food_court_a": 0.30, "food_court_b": 0.25, "merchandise": 0.20, "main_concourse": 0.60
+      }
+    }
+  },
+  "queue_simulation": {
+    "phases": {
+      "pre_event": {
+        "stall_1": 12, "stall_2": 5, "stall_3": 8, "stall_4": 10, "stall_5": 3,
+        "stall_6": 15, "stall_7": 4, "stall_8": 6,
+        "wc_north_a": 3, "wc_north_b": 2, "wc_south_a": 3, "wc_south_b": 2, "wc_east": 2, "wc_west": 2
+      },
+      "first_half": {
+        "stall_1": 2, "stall_2": 1, "stall_3": 2, "stall_4": 1, "stall_5": 1,
+        "stall_6": 3, "stall_7": 1, "stall_8": 4,
+        "wc_north_a": 1, "wc_north_b": 1, "wc_south_a": 1, "wc_south_b": 1, "wc_east": 1, "wc_west": 1
+      },
+      "halftime": {
+        "stall_1": 28, "stall_2": 12, "stall_3": 22, "stall_4": 25, "stall_5": 8,
+        "stall_6": 35, "stall_7": 10, "stall_8": 18,
+        "wc_north_a": 15, "wc_north_b": 18, "wc_south_a": 14, "wc_south_b": 16, "wc_east": 12, "wc_west": 10
+      },
+      "second_half": {
+        "stall_1": 5, "stall_2": 2, "stall_3": 4, "stall_4": 3, "stall_5": 2,
+        "stall_6": 6, "stall_7": 2, "stall_8": 3,
+        "wc_north_a": 2, "wc_north_b": 2, "wc_south_a": 2, "wc_south_b": 2, "wc_east": 1, "wc_west": 1
+      },
+      "post_event": {
+        "stall_1": 8, "stall_2": 3, "stall_3": 6, "stall_4": 7, "stall_5": 3,
+        "stall_6": 10, "stall_7": 3, "stall_8": 5,
+        "wc_north_a": 5, "wc_north_b": 6, "wc_south_a": 5, "wc_south_b": 5, "wc_east": 4, "wc_west": 3
+      }
+    }
+  },
+  "alerts": [
+    { "phase": "pre_event", "priority": "high", "title": "Gates Now Open", "message": "All 4 gates are now open. Gate East is least crowded for quickest entry.", "type": "info" },
+    { "phase": "first_half", "priority": "medium", "title": "Halftime in 10 Minutes", "message": "Lines will spike at halftime. Head to Food Court B now — currently only a 3-min wait.", "type": "warning" },
+    { "phase": "halftime", "priority": "high", "title": "Halftime Rush", "message": "Food courts are filling fast. Stall 2 (Veggie Bites) has the shortest line at 12 min.", "type": "alert" },
+    { "phase": "halftime", "priority": "medium", "title": "Best Restroom Option", "message": "Restroom West has the shortest wait — 5 min vs 15 min at North restrooms.", "type": "info" },
+    { "phase": "second_half", "priority": "low", "title": "Returning to Stands", "message": "Most concourses are now clear. All stand entrances are open.", "type": "info" },
+    { "phase": "post_event", "priority": "high", "title": "Event Ending Soon", "message": "Gate West is least crowded for exit — 20% fewer people than Gate North.", "type": "warning" },
+    { "phase": "post_event", "priority": "high", "title": "Exit Guidance", "message": "Staggered exit recommended: Row 1-20 use Gate North, Row 21-40 use Gate South.", "type": "alert" }
+  ],
+  "announcements": [
+    { "id": "ann_1", "message": "Welcome to Championship Final 2026! Gates open — enjoy the event.", "priority": "normal", "created_at": "2026-01-01T15:00:00Z" },
+    { "id": "ann_2", "message": "Reminder: No glass bottles inside the stadium. Please dispose responsibly.", "priority": "normal", "created_at": "2026-01-01T15:30:00Z" },
+    { "id": "ann_3", "message": "EMERGENCY DRILL: This is only a test. Please remain calm.", "priority": "emergency", "created_at": "2026-01-01T16:00:00Z" }
+  ]
+}

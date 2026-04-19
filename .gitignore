@@ -1,0 +1,28 @@
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Node
+node_modules/
+npm-debug.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# Secrets & Credentials
+seed/serviceAccountKey.json
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db

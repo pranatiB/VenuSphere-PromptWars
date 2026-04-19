@@ -1,0 +1,43 @@
+{
+  "name": "VenueFlow — Smart Stadium Assistant",
+  "short_name": "VenueFlow",
+  "description": "AI-powered real-time venue assistant for Olympic Stadium. Navigate crowds, find food, get directions.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1a1a2e",
+  "background_color": "#0f0f23",
+  "lang": "en",
+  "categories": ["sports", "travel", "navigation"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='96' fill='%231a1a2e'/><circle cx='96' cy='96' r='80' fill='%234361ee'/><path d='M60 120 Q96 48 132 120' stroke='white' stroke-width='8' stroke-linecap='round' fill='none'/><circle cx='96' cy='120' r='12' fill='%2306d6a0'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='256' fill='%231a1a2e'/><circle cx='256' cy='256' r='220' fill='%234361ee'/><path d='M160 320 Q256 128 352 320' stroke='white' stroke-width='20' stroke-linecap='round' fill='none'/><circle cx='256' cy='320' r='32' fill='%2306d6a0'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Find Food",
+      "short_name": "Food",
+      "description": "Find the nearest food stall with shortest queue",
+      "url": "/#queue",
+      "icons": []
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "Ask AI",
+      "description": "Ask the AI assistant anything about the venue",
+      "url": "/#assistant",
+      "icons": []
+    }
+  ]
+}
