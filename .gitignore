@@ -23,6 +23,8 @@ seed/serviceAccountKey.json
 .env.local
 .env.*.local
 frontend/js/config.local.js
+frontend/js/config.prod.js
+
 
 # OS
 .DS_Store
