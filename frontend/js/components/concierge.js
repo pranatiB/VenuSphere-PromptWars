@@ -7,7 +7,7 @@
  * Powered by Crowd Autopilot™ predictions.
  */
 
-import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js?v=20260420_FINAL';
+import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js';
 import { announce } from '/js/utils/a11y.js';
 
 let _container = null;
@@ -52,6 +52,7 @@ export function destroyConcierge() {
  */
 function _handlePredictions(predictions) {
   if (!_container) return;
+  if (!Array.isArray(predictions)) return;
 
   // Filter out dismissed and old predictions
   const active = predictions
@@ -104,7 +105,7 @@ function _createNudge(prediction, index) {
     ? `<span class="nudge-savings">Save ${prediction.savingsMinutes} min</span>`
     : '';
   const alternate = prediction.alternateZone
-    ? `<div class="nudge-alt">→ Try <strong>${prediction.alternateZone}</strong></div>`
+    ? `<div class="nudge-alt">→ Try <strong>${_esc(prediction.alternateZone)}</strong></div>`
     : '';
 
   nudge.innerHTML = `

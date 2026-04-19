@@ -6,7 +6,7 @@
 import { initFirebase, signInAnon, watchAuthState, subscribeToDoc, subscribeToCollection } from '/js/services/firebase-client.js';
 import { setLocale } from '/js/utils/i18n.js';
 import { announce, showAnnouncementBanner, updateNavAria, showToast, initSkipLink } from '/js/utils/a11y.js';
-import { onPrediction, startAutopilot } from './services/crowd-autopilot.js?v=PERFECT_FINAL';
+import { startAutopilot } from '/js/services/crowd-autopilot.js';
 import { initConcierge } from '/js/components/concierge.js';
 
 /** Lazy component loaders keyed by view id. */
