@@ -1,7 +1,7 @@
 {
-  "name": "VenueFlow — Smart Stadium Assistant",
-  "short_name": "VenueFlow",
-  "description": "AI-powered real-time venue assistant for Olympic Stadium. Navigate crowds, find food, get directions.",
+  "name": "VenuSphere — Smart Stadium Assistant",
+  "short_name": "VenuSphere",
+  "description": "AI-powered real-time venue assistant for Eden Gardens. Navigate crowds, find food, get directions.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",

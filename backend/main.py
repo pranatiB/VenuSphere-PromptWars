@@ -1,4 +1,4 @@
-"""Cloud Function HTTP entry points for the VenueFlow API.
+"""Cloud Function HTTP entry points for the VenuSphere API.
 
 All endpoints (except /api/health) require a valid Firebase Auth token
 in the Authorization: Bearer <token> header.
@@ -11,7 +11,7 @@ import os
 import uuid
 
 import firebase_admin
-import functions_framework
+from firebase_functions import https_fn
 from firebase_admin import firestore
 from flask import Request, Response, jsonify
 
@@ -33,7 +33,7 @@ from utils.security import (
 
 
 _ALLOWED_ORIGINS = [
-    os.environ.get("CORS_ORIGIN", "https://venueflow-promptwars-apr2026.web.app"),
+    os.environ.get("CORS_ORIGIN", "https://venusphere-promptwars-apr2026.web.app"),
     "http://localhost:8080",
     "http://127.0.0.1:8080",
 ]
@@ -54,7 +54,7 @@ def _get_db():
 def _cors_headers(origin: str = None) -> dict:
     """Return CORS response headers restricted to the allowed domains."""
     # Default to the primary production origin
-    effective_origin = os.environ.get("CORS_ORIGIN", "https://venueflow-promptwars-apr2026.web.app")
+    effective_origin = os.environ.get("CORS_ORIGIN", "https://venusphere-promptwars-apr2026.web.app")
 
     # If the request provides an Origin, check if it's in our allowed list
     if origin:
@@ -93,8 +93,8 @@ def _authenticate(request: Request) -> tuple[str | None, Response | None]:
     return uid, None
 
 
-@functions_framework.http
-def venueflow_api(request: Request) -> Response:
+@https_fn.on_request()
+def venusphere_api(request: https_fn.Request) -> https_fn.Response:
     """Main Cloud Function HTTP dispatcher for all /api/* routes.
 
     Args:
@@ -113,7 +113,7 @@ def venueflow_api(request: Request) -> Response:
     # Health check MUST be before any Firebase/Firestore initialization
     # so the Cloud Run health probe succeeds during cold start.
     if path == "/api/health":
-        return jsonify({"status": "ok", "service": "venueflow"}), 200, _cors_headers(origin)
+        return jsonify({"status": "ok", "service": "venusphere"}), 200, _cors_headers(origin)
 
     uid, err_response = _authenticate(request)
     if err_response:

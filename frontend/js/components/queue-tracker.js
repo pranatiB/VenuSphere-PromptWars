@@ -13,29 +13,31 @@ let _activeFilter = 'all';
 let _unsub = null;
 
 const STALL_META = {
-  stall_1: { name: 'Olympic Burgers', type: 'food', icon: '🍔', zone: 'Food Court A' },
-  stall_2: { name: 'Veggie Bites',    type: 'food', icon: '🥗', zone: 'Food Court A' },
-  stall_3: { name: 'Pizza Palace',    type: 'food', icon: '🍕', zone: 'Food Court A' },
-  stall_4: { name: 'Halal Grill',     type: 'food', icon: '🥩', zone: 'Food Court B' },
-  stall_5: { name: 'Noodle House',    type: 'food', icon: '🍜', zone: 'Food Court B' },
-  stall_6: { name: 'Beer Garden',     type: 'beverage', icon: '🍺', zone: 'Food Court A' },
-  stall_7: { name: 'Smoothie Bar',    type: 'beverage', icon: '🥤', zone: 'Food Court B' },
-  stall_8: { name: 'Merch Shop',      type: 'merchandise', icon: '👕', zone: 'Merchandise' },
+  stall_1: { name: 'Biryani House', type: 'food', icon: '🍛', zone: 'Food Court A' },
+  stall_2: { name: 'Chaat Corner', type: 'food', icon: '🥘', zone: 'Food Court A' },
+  stall_3: { name: 'Samosa Stand', type: 'food', icon: '🥟', zone: 'Food Court A' },
+  stall_4: { name: 'Kebabs & Rolls', type: 'food', icon: '🌯', zone: 'Food Court B' },
+  stall_5: { name: 'Dosa Point', type: 'food', icon: '🥞', zone: 'Food Court B' },
+  stall_6: { name: 'Beer Garden', type: 'beverage', icon: '🍺', zone: 'Food Court A' },
+  stall_7: { name: 'Smoothie Bar', type: 'beverage', icon: '🥤', zone: 'Food Court B' },
+  stall_8: { name: 'Merch Shop', type: 'merchandise', icon: '👕', zone: 'Merchandise' },
   wc_north_a: { name: 'Restroom North A', type: 'restroom', icon: '🚻', zone: 'North Stand' },
   wc_north_b: { name: 'Restroom North B', type: 'restroom', icon: '🚻', zone: 'Gate North' },
   wc_south_a: { name: 'Restroom South A', type: 'restroom', icon: '🚻', zone: 'South Stand' },
   wc_south_b: { name: 'Restroom South B', type: 'restroom', icon: '🚻', zone: 'Gate South' },
-  wc_east:    { name: 'Restroom East',    type: 'restroom', icon: '🚻', zone: 'East Stand' },
-  wc_west:    { name: 'Restroom West',    type: 'restroom', icon: '🚻', zone: 'West Stand' },
+  wc_east: { name: 'Restroom East', type: 'restroom', icon: '🚻', zone: 'East Stand' },
+  wc_west: { name: 'Restroom West', type: 'restroom', icon: '🚻', zone: 'West Stand' },
 };
 
 const DEMO_QUEUES = Object.entries(STALL_META).map(([id, meta]) => ({
-  stall_id: id, wait_minutes: Math.floor(Math.random() * 15) + 1,
+  stall_id: id,
+  wait_minutes: Math.floor(Math.random() * 15) + 1,
   trend: ['stable', 'increasing', 'decreasing'][Math.floor(Math.random() * 3)],
   prediction_15: Math.floor(Math.random() * 20) + 1,
   prediction_30: Math.floor(Math.random() * 15) + 1,
   phase: 'pre_event',
 }));
+
 
 function _checkForFilterParam() {
   window.addEventListener('vf:navigate', (e) => {
@@ -83,7 +85,7 @@ function _render() {
       </div>
 
       <div role="tablist" aria-label="Filter by type" class="chip-group mb-4" style="gap:0.5rem">
-        ${['all','food','beverage','restroom','merchandise'].map((f) => `
+        ${['all', 'food', 'beverage', 'restroom', 'merchandise'].map((f) => `
           <button role="tab" aria-selected="${f === _activeFilter}" class="chip-toggle ${f === _activeFilter ? 'selected' : ''}" data-filter="${f}">
             ${_filterLabel(f)}
           </button>`).join('')}
@@ -160,7 +162,7 @@ function _bindAlertButtons() {
     btn.addEventListener('click', async () => {
       const stallId = btn.dataset.stall;
       const meta = STALL_META[stallId] || { name: stallId };
-      
+
       // Request native notification permissions
       if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
         await Notification.requestPermission();
@@ -168,7 +170,7 @@ function _bindAlertButtons() {
 
       _activeAlerts.add(stallId);
       showToast(`Alert set for ${meta.name} — we'll notify you when wait < 5 min!`, 'success');
-      
+
       btn.textContent = '✓ Alert set';
       btn.disabled = true;
     });
@@ -194,27 +196,36 @@ function _subscribeToLive() {
 
     // Check if any tracked alerts just triggered
     _activeAlerts.forEach(stallId => {
-       const update = byId[stallId];
-       if (update && update.wait_minutes <= 5) {
-          const meta = STALL_META[stallId] || { name: stallId };
-          
-          // Trigger push notification if permitted
-          if ('Notification' in window && Notification.permission === 'granted') {
-             new Notification('VenueFlow Alert', { 
-               body: `The wait time at ${meta.name} has dropped to ${update.wait_minutes} minutes!`,
-               icon: '/assets/icons/icon-192x192.png'
-             });
-          } else {
-             // Fallback to in-app toast
-             showToast(`🔔 The wait time at ${meta.name} is now ${update.wait_minutes} min!`, 'success');
-          }
-          
-          // Remove from tracking so it doesn't spam
-          _activeAlerts.delete(stallId);
-       }
+      const update = byId[stallId];
+      if (update && update.wait_minutes <= 5) {
+        const meta = STALL_META[stallId] || { name: stallId };
+
+        // Trigger push notification if permitted
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('VenuSphere Alert', {
+            body: `The wait time at ${meta.name} has dropped to ${update.wait_minutes} minutes!`,
+            icon: '/assets/icons/icon-192x192.png'
+          });
+        } else {
+          // Fallback to in-app toast
+          showToast(`🔔 The wait time at ${meta.name} is now ${update.wait_minutes} min!`, 'success');
+        }
+
+        // Remove from tracking so it doesn't spam
+        _activeAlerts.delete(stallId);
+      }
     });
 
-    _allQueues = _allQueues.map((q) => byId[q.stall_id] ? { ...q, ...byId[q.stall_id] } : q);
+    _allQueues = _allQueues.map((q) => {
+      const live = byId[q.stall_id];
+      if (!live) return q;
+      const merged = { ...q, ...live };
+      // Preserve prediction fields from demo data if live data lacks them
+      merged.prediction_15 = live.prediction_15 ?? q.prediction_15 ?? merged.wait_minutes;
+      merged.prediction_30 = live.prediction_30 ?? q.prediction_30 ?? merged.wait_minutes;
+      return merged;
+    });
+
     _updateGrid();
   });
 }

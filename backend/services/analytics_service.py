@@ -5,7 +5,7 @@ import json
 from typing import Any
 
 
-_logger = logging.getLogger("venueflow")
+_logger = logging.getLogger("venusphere")
 _logger.setLevel(logging.INFO)
 
 

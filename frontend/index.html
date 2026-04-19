@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="VenueFlow — AI-powered smart stadium assistant. Navigate crowds, find food with short queues, and enjoy Championship Final 2026 at Olympic Stadium." />
+  <meta name="description" content="VenuSphere — AI-powered smart stadium assistant. Navigate crowds, find food with short queues, and enjoy Championship Final 2026 at Eden Gardens." />
   <meta name="theme-color" content="#1a1a2e" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="VenueFlow" />
+  <meta name="apple-mobile-web-app-title" content="VenuSphere" />
 
-  <title>VenueFlow — Smart Stadium Assistant</title>
+  <title>VenuSphere — Smart Stadium Assistant</title>
   <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/styles.css?v=20260419" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <!-- App Shell -->
-  <div id="app" role="application" aria-label="VenueFlow Stadium Assistant">
+  <div id="app" role="application" aria-label="VenuSphere Stadium Assistant">
     
     <!-- Ambient Background -->
     <div class="ambient-bg" aria-hidden="true">
@@ -46,7 +46,7 @@
               </linearGradient>
             </defs>
           </svg>
-          <span class="brand-name">VenueFlow</span>
+          <span class="brand-name">VenuSphere</span>
         </div>
         <div class="header-meta">
           <span id="phase-badge" class="phase-badge" aria-live="polite" aria-label="Current event phase">Pre-Event</span>
@@ -129,21 +129,26 @@
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay" aria-busy="true" aria-label="Loading VenueFlow" role="status">
+    <div id="loading-overlay" class="loading-overlay" aria-busy="true" aria-label="Loading VenuSphere" role="status">
       <div class="loading-inner">
         <div class="loading-ring"></div>
-        <p class="loading-text">Loading VenueFlow…</p>
+        <p class="loading-text">Loading VenuSphere…</p>
       </div>
     </div>
 
 
+
+    <!-- Crowd Autopilot™ Concierge Tray -->
+    <div id="concierge-tray" class="concierge-tray" aria-label="Smart recommendations" role="region"></div>
 
   </div><!-- /#app -->
 
   <!-- Notification Toast Container -->
   <div id="toast-container" aria-live="polite" aria-atomic="false" role="status"></div>
 
+  <!-- Local API Keys (gitignored — never pushed) -->
+  <script src="/js/config.local.js" onerror="console.warn('config.local.js not found — using placeholder keys')"></script>
   <!-- App Entry Point -->
-  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/app.js?v=20260419c"></script>
 </body>
 </html>

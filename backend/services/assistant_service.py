@@ -12,7 +12,7 @@ from utils.cache import get_cached, set_cached
 
 _MODEL_NAME = "gemini-1.5-flash"
 _MAX_HISTORY_TURNS = 10
-_SYSTEM_PROMPT = """You are VenueFlow, an AI assistant for Olympic Stadium.
+_SYSTEM_PROMPT = """You are VenuSphere, an AI assistant for Eden Gardens.
 You help attendees at Championship Final 2026 navigate the venue, find food with
 short wait times, locate restrooms, check crowd levels, and plan their event experience.
 

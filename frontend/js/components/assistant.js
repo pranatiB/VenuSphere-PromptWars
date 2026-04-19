@@ -22,11 +22,11 @@ const QUICK_PROMPTS = [
 ];
 
 const DEMO_RESPONSES = {
-  'eat':      'Based on current queue data, **Veggie Bites (Stall 2)** in Food Court A has only a 5-minute wait. If you prefer grilled food, **Halal Grill (Stall 4)** in Food Court B is also quick at 10 minutes. Head there now before the halftime rush!',
+  'eat':      'Based on current queue data, **Chaat Corner (Stall 2)** in Food Court A has only a 5-minute wait. If you prefer grilled food, **Kebabs & Rolls (Stall 4)** in Food Court B is also quick at 10 minutes. Head there now before the halftime rush!',
   'restroom': '**Restroom West** currently has the shortest wait at 3 minutes vs 15 minutes at the North restrooms. It\'s accessible from the main concourse — turn left at the food court.',
   'exit':     '**Gate West** is currently 35% less crowded than Gate North. For the fastest exit, head through the main concourse and follow signs to Gate West.',
   'next':     'The **First Half** is currently underway. **Halftime** begins in approximately 12 minutes — expect queues at food courts to surge by 3–5x. I\'d recommend heading to Food Court B now.',
-  'default':  'I\'m your VenueFlow AI assistant! I can help you find food, locate restrooms, navigate the venue, and plan your event experience. What would you like to know?',
+  'default':  'I\'m your VenuSphere AI assistant! I can help you find food, locate restrooms, navigate the venue, and plan your event experience. What would you like to know?',
 };
 
 /**
@@ -192,8 +192,8 @@ function _buildActionCard(type, payload) {
 
 function _welcomeMessage() {
   return `<div class="chat-bubble chat-bubble--ai" role="article" aria-label="Welcome message from assistant">
-    👋 <strong>Welcome to VenueFlow!</strong><br><br>
-    I'm your AI assistant for <em>Championship Final 2026</em> at Olympic Stadium. I know the live crowd levels, queue times, and event schedule.<br><br>
+    👋 <strong>Welcome to VenuSphere!</strong><br><br>
+    I'm your AI assistant for <em>Championship Final 2026</em> at Eden Gardens. I know the live crowd levels, queue times, and event schedule.<br><br>
     Ask me anything — try a quick prompt below or type your question.
   </div>`;
 }

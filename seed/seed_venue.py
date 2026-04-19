@@ -1,4 +1,4 @@
-"""Seed script: populates Firestore with Olympic Stadium demo data.
+"""Seed script: populates Firestore with Eden Gardens demo data.
 
 Run once before demo:
     python seed/seed_venue.py
@@ -162,7 +162,7 @@ def seed_crowd_summary(db: firestore.Client, simulation: dict) -> None:
 
 def main() -> None:
     """Entry point: seed all Firestore collections from demo data."""
-    project_id = os.environ.get("FIREBASE_PROJECT_ID", "venueflow-demo")
+    project_id = os.environ.get("FIREBASE_PROJECT_ID", "venusphere-demo")
     print(f"Seeding Firestore for project: {project_id}")
 
     data = load_demo_data()

@@ -155,7 +155,7 @@ function _render() {
       </section>
 
       <div style="text-align:center;padding:1.5rem 0;color:var(--clr-text-faint);font-size:0.7rem">
-        VenueFlow v1.0 · Olympic Stadium · Championship Final 2026
+        VenuSphere v1.0 · Eden Gardens · Championship Final 2026
       </div>
     </div>`;
 

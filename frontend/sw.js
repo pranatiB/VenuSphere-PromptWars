@@ -1,10 +1,10 @@
 /**
- * VenueFlow Service Worker
+ * VenuSphere Service Worker
  * Cache-first for static assets, network-first for API calls.
  * Handles offline fallback and push notification delivery.
  */
 
-const CACHE_VERSION = 'venueflow-v2';
+const CACHE_VERSION = 'venusphere-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -120,12 +120,12 @@ function offlineFallback() {
 /** Push: display notification when received from server. */
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'VenueFlow Alert';
+  const title = data.title || 'VenuSphere Alert';
   const options = {
-    body: data.body || 'New update from Olympic Stadium.',
+    body: data.body || 'New update from Eden Gardens.',
     icon: '/manifest.json',
     badge: '/manifest.json',
-    tag: data.tag || 'venueflow',
+    tag: data.tag || 'venusphere',
     requireInteraction: data.priority === 'emergency',
     data: { url: data.url || '/' },
   };

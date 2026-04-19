@@ -1,11 +1,13 @@
 /**
  * app.js
- * VenueFlow app bootstrap: Firebase init, routing, service worker, announcements.
+ * VenuSphere app bootstrap: Firebase init, routing, service worker, announcements.
  */
 
 import { initFirebase, signInAnon, watchAuthState, subscribeToDoc, subscribeToCollection } from './services/firebase-client.js';
 import { setLocale } from './utils/i18n.js';
 import { announce, showAnnouncementBanner, updateNavAria, showToast } from './utils/a11y.js';
+import { startAutopilot } from './services/autopilot-engine.js';
+import { initConcierge } from './components/concierge.js';
 
 /** Lazy component loaders keyed by view id. */
 const COMPONENT_LOADERS = {
@@ -85,6 +87,10 @@ async function bootstrap() {
 
   // Show current event phase
   _watchEventPhase();
+
+  // Start Crowd Autopilot™ + AI Concierge
+  startAutopilot();
+  initConcierge();
 
   // Hide loading overlay
   const overlay = document.getElementById('loading-overlay');

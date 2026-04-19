@@ -1,7 +1,7 @@
 {
   "venue": {
     "id": "olympic_stadium",
-    "name": "Olympic Stadium",
+    "name": "Eden Gardens",
     "capacity": 60000,
     "coordinates": { "lat": 51.5560, "lng": -0.2795 },
     "address": "Wembley, London, HA9 0WS, UK"
@@ -33,11 +33,11 @@
     { "id": "main_concourse", "name": "Main Concourse", "type": "concourse", "capacity": 5000, "coordinates": { "lat": 51.5560, "lng": -0.2795 }, "polygon": [{ "lat": 51.5545, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2820 }, { "lat": 51.5575, "lng": -0.2770 }, { "lat": 51.5545, "lng": -0.2770 }] }
   ],
   "stalls": [
-    { "id": "stall_1", "name": "Olympic Burgers", "zone_id": "food_court_a", "type": "food", "cuisine": "burgers", "dietary": ["none"], "coordinates": { "lat": 51.5571, "lng": -0.2812 } },
-    { "id": "stall_2", "name": "Veggie Bites", "zone_id": "food_court_a", "type": "food", "cuisine": "vegan", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5573, "lng": -0.2808 } },
-    { "id": "stall_3", "name": "Pizza Palace", "zone_id": "food_court_a", "type": "food", "cuisine": "pizza", "dietary": ["vegetarian"], "coordinates": { "lat": 51.5570, "lng": -0.2816 } },
-    { "id": "stall_4", "name": "Halal Grill", "zone_id": "food_court_b", "type": "food", "cuisine": "grilled", "dietary": ["halal"], "coordinates": { "lat": 51.5547, "lng": -0.2782 } },
-    { "id": "stall_5", "name": "Noodle House", "zone_id": "food_court_b", "type": "food", "cuisine": "asian", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5549, "lng": -0.2778 } },
+    { "id": "stall_1", "name": "Biryani House", "zone_id": "food_court_a", "type": "food", "cuisine": "burgers", "dietary": ["none"], "coordinates": { "lat": 51.5571, "lng": -0.2812 } },
+    { "id": "stall_2", "name": "Chaat Corner", "zone_id": "food_court_a", "type": "food", "cuisine": "vegan", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5573, "lng": -0.2808 } },
+    { "id": "stall_3", "name": "Samosa Stand", "zone_id": "food_court_a", "type": "food", "cuisine": "pizza", "dietary": ["vegetarian"], "coordinates": { "lat": 51.5570, "lng": -0.2816 } },
+    { "id": "stall_4", "name": "Kebabs & Rolls", "zone_id": "food_court_b", "type": "food", "cuisine": "grilled", "dietary": ["halal"], "coordinates": { "lat": 51.5547, "lng": -0.2782 } },
+    { "id": "stall_5", "name": "Dosa Point", "zone_id": "food_court_b", "type": "food", "cuisine": "asian", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5549, "lng": -0.2778 } },
     { "id": "stall_6", "name": "Beer Garden", "zone_id": "food_court_a", "type": "beverage", "cuisine": "beverages", "dietary": [], "coordinates": { "lat": 51.5574, "lng": -0.2804 } },
     { "id": "stall_7", "name": "Smoothie Bar", "zone_id": "food_court_b", "type": "beverage", "cuisine": "beverages", "dietary": ["vegan", "gluten-free"], "coordinates": { "lat": 51.5546, "lng": -0.2786 } },
     { "id": "stall_8", "name": "Merch Shop", "zone_id": "merchandise", "type": "merchandise", "cuisine": null, "dietary": [], "coordinates": { "lat": 51.5565, "lng": -0.2820 } }
@@ -111,7 +111,7 @@
   "alerts": [
     { "phase": "pre_event", "priority": "high", "title": "Gates Now Open", "message": "All 4 gates are now open. Gate East is least crowded for quickest entry.", "type": "info" },
     { "phase": "first_half", "priority": "medium", "title": "Halftime in 10 Minutes", "message": "Lines will spike at halftime. Head to Food Court B now — currently only a 3-min wait.", "type": "warning" },
-    { "phase": "halftime", "priority": "high", "title": "Halftime Rush", "message": "Food courts are filling fast. Stall 2 (Veggie Bites) has the shortest line at 12 min.", "type": "alert" },
+    { "phase": "halftime", "priority": "high", "title": "Halftime Rush", "message": "Food courts are filling fast. Stall 2 (Chaat Corner) has the shortest line at 12 min.", "type": "alert" },
     { "phase": "halftime", "priority": "medium", "title": "Best Restroom Option", "message": "Restroom West has the shortest wait — 5 min vs 15 min at North restrooms.", "type": "info" },
     { "phase": "second_half", "priority": "low", "title": "Returning to Stands", "message": "Most concourses are now clear. All stand entrances are open.", "type": "info" },
     { "phase": "post_event", "priority": "high", "title": "Event Ending Soon", "message": "Gate West is least crowded for exit — 20% fewer people than Gate North.", "type": "warning" },

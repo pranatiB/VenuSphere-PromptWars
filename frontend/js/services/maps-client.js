@@ -6,7 +6,7 @@
 
 const MAPS_CDN = 'https://maps.googleapis.com/maps/api/js';
 /** Replace with your Google Maps API key. */
-const MAPS_API_KEY = window.VENUEFLOW_MAPS_KEY || 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
+const MAPS_API_KEY = window.VENUSPHERE_MAPS_KEY || 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
 
 let _mapsLoaded = false;
 let _loadPromise = null;
@@ -159,7 +159,7 @@ export function clearRoute() {
 }
 
 /**
- * Returns dark-mode map styles compatible with the VenueFlow design system.
+ * Returns dark-mode map styles compatible with the VenuSphere design system.
  * @returns {Array<google.maps.MapTypeStyle>}
  */
 function _darkMapStyles() {

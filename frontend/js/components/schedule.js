@@ -18,7 +18,7 @@ const DEMO_SCHEDULE = {
     { id: 'first_half',  name: '1st Half',     duration_minutes: 45, start_offset: 0,   desc: 'Match underway — stay in stands' },
     { id: 'halftime',    name: 'Half Time',    duration_minutes: 20, start_offset: 45,  desc: 'Concessions surge — plan ahead!' },
     { id: 'second_half', name: '2nd Half',     duration_minutes: 45, start_offset: 65,  desc: 'Return to your seat' },
-    { id: 'post_event',  name: 'Post-Event',   duration_minutes: 60, start_offset: 110, desc: 'Staggered exit — use VenueFlow nav' },
+    { id: 'post_event',  name: 'Post-Event',   duration_minutes: 60, start_offset: 110, desc: 'Staggered exit — use VenuSphere nav' },
   ],
 };
 
@@ -26,6 +26,11 @@ const DEMO_ALERTS = [
   { priority: 'high',   title: 'Halftime in 10 min', message: 'Lines will spike. Head to Food Court B now — only 5-min wait currently.' },
   { priority: 'medium', title: 'Best Restroom',       message: 'Restroom West has shortest wait at 3 min vs 15 min at North.' },
   { priority: 'low',    title: 'Merchandise',         message: 'Merch shop has low crowd now — best time to browse!' },
+];
+
+const DEMO_ANNOUNCEMENTS = [
+  { priority: 'standard', message: 'Welcome to Eden Gardens! Please locate your nearest exit.', created_at: Date.now() },
+  { priority: 'standard', message: 'Merchandise stalls now open at Gate 4 with exclusive final gear.', created_at: Date.now() - 60000 },
 ];
 
 /**
@@ -119,22 +124,38 @@ async function _fetchSchedule() {
 
 function _subscribeToAnnouncements() {
   if (_unsub) _unsub();
-  _unsub = subscribeToCollection(
-    'announcements',
-    (items) => {
-      const el = document.getElementById('announcements-list');
-      if (!el || !items.length) return;
-      el.innerHTML = items.slice(0, 5).map((a) => `
-        <div class="${a.priority === 'emergency' ? 'alert-item high' : 'alert-item'}" role="listitem" style="margin-bottom:0.5rem">
-          <div class="alert-item-body">
-            <div class="alert-item-title">${a.priority === 'emergency' ? '🚨 Emergency' : '📢 Announcement'}</div>
-            <div class="alert-item-msg">${_esc(a.message)}</div>
-          </div>
-        </div>`).join('');
-      announce(`New announcement: ${items[0].message.substring(0, 60)}`);
-    },
-    { orderByField: 'created_at', limitTo: 5 }
-  );
+  
+  let connected = false;
+
+  const renderAnnouncements = (items) => {
+    const el = document.getElementById('announcements-list');
+    if (!el || !items.length) return;
+    el.innerHTML = items.slice(0, 5).map((a) => `
+      <div class="${a.priority === 'emergency' ? 'alert-item high' : 'alert-item'}" role="listitem" style="margin-bottom:0.5rem">
+        <div class="alert-item-body">
+          <div class="alert-item-title">${a.priority === 'emergency' ? '🚨 Emergency' : '📢 Announcement'}</div>
+          <div class="alert-item-msg">${_esc(a.message)}</div>
+        </div>
+      </div>`).join('');
+  };
+
+  try {
+    _unsub = subscribeToCollection(
+      'announcements',
+      (items) => {
+        connected = true;
+        renderAnnouncements(items.length ? items : DEMO_ANNOUNCEMENTS);
+      },
+      { orderByField: 'created_at', limitTo: 5 }
+    );
+  } catch (e) {
+    // Keep demo
+  }
+
+  // Fallback for offline or demo mode
+  setTimeout(() => {
+    if (!connected) renderAnnouncements(DEMO_ANNOUNCEMENTS);
+  }, 800);
 }
 
 function _phaseTime(phase) {
