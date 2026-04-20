@@ -4,10 +4,10 @@
  * Lazy-loads Maps only when the map view becomes active.
  */
 
-import { loadGoogleMaps, initMap, addZonePolygon, updateZoneColor } from '../services/maps-client.js';
-import { getCrowdData, getZoneCrowd } from '../services/api-client.js';
-import { subscribeToCollection } from '../services/firebase-client.js';
-import { announce, showToast } from '../utils/a11y.js';
+import { loadGoogleMaps, initMap, addZonePolygon, updateZoneColor } from '/js/services/maps-client.js';
+import { getCrowdData, getZoneCrowd } from '/js/services/api-client.js';
+import { subscribeToCollection } from '/js/services/firebase-client.js';
+import { announce, showToast } from '/js/utils/a11y.js';
 
 const VENUE_CENTER = { lat: 51.5560, lng: -0.2795 };
 

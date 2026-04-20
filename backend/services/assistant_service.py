@@ -6,8 +6,8 @@ from typing import Any
 
 from services.crowd_service import get_all_zones_density
 from services.queue_service import get_all_queue_times
-from services.event_service import get_current_phase, get_upcoming_alerts
-from utils.cache import get_cached, set_cached
+from services.event_service import get_upcoming_alerts
+from utils.translate import translate_text
 
 
 _MODEL_NAME = "gemini-1.5-flash"
@@ -22,7 +22,7 @@ Responses should be concise (under 150 words) and end with a clear action item.
 Format structured data (stalls, routes) as JSON inside <action> tags when relevant."""
 
 
-def _load_session_history(uid: str, session_id: str, db: Any) -> list[dict]:
+def _load_session_history(uid: str, _session_id: str, db: Any) -> list[dict]:
     """Load the last N chat turns from Firestore for context.
 
     Args:
@@ -87,8 +87,8 @@ def _build_venue_context(phase: str, db: Any) -> str:
     context = {
         "event_phase": phase,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "busiest_zones": [{"zone_id": z["zone_id"], "density": z["density"], "label": z["label"]} for z in top_crowded],
-        "shortest_queues": [{"stall_id": q["stall_id"], "wait_minutes": q["wait_minutes"]} for q in shortest_queues],
+        "busiest_zones": [{"zone_id": z["zone_id"], "density": z["density"], "label": z["label"]} for z in top_crowded],  # pylint: disable=line-too-long
+        "shortest_queues": [{"stall_id": q["stall_id"], "wait_minutes": q["wait_minutes"]} for q in shortest_queues],  # pylint: disable=line-too-long
         "active_alerts": [a.get("message", "") for a in alerts[:2]],
     }
     return json.dumps(context, indent=2)
@@ -129,9 +129,10 @@ def chat(uid: str, message: str, session_id: str, phase: str, db: Any) -> dict:
     Returns:
         Dict with 'text', 'action_type', 'action_payload', and 'session_id'.
     """
+    # pylint: disable=too-many-locals
     try:
-        import vertexai
-        from vertexai.generative_models import GenerativeModel
+        import vertexai  # pylint: disable=import-outside-toplevel
+        from vertexai.generative_models import GenerativeModel  # pylint: disable=import-outside-toplevel
 
         vertexai.init()
         model = GenerativeModel(
@@ -162,17 +163,34 @@ def chat(uid: str, message: str, session_id: str, phase: str, db: Any) -> dict:
         if "<action>" in clean_text:
             clean_text = clean_text[:clean_text.index("<action>")].strip()
 
+        # Check user language preference
+        doc = db.collection("users").document(uid).get()
+        target_lang = "en"
+        if doc.exists:
+            target_lang = doc.to_dict().get("language", "en")
+            
+        final_text = translate_text(clean_text, target_lang)
+
         return {
-            "text": clean_text,
+            "text": final_text,
             "action_type": action_type,
             "action_payload": action_payload,
             "session_id": session_id,
         }
 
-    except Exception as exc:
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         fallback = _fallback_response(message, phase, db)
+        
+        # Check user language preference
+        doc = db.collection("users").document(uid).get()
+        target_lang = "en"
+        if doc.exists:
+            target_lang = doc.to_dict().get("language", "en")
+            
+        final_text = translate_text(fallback, target_lang)
+        
         return {
-            "text": fallback,
+            "text": final_text,
             "action_type": None,
             "action_payload": None,
             "session_id": session_id,

@@ -80,11 +80,5 @@ def broadcast_announcement(message: str, priority: str, db: Any) -> str:
     Returns:
         New announcement document ID.
     """
-    doc_ref = db.collection("announcements").document()
-    doc_ref.set({
-        "id": doc_ref.id,
-        "message": message,
-        "priority": priority,
-        "created_at": datetime.now(timezone.utc),
-    })
-    return doc_ref.id
+    from services.event_service import publish_announcement  # pylint: disable=import-outside-toplevel
+    return publish_announcement(message, priority, db)

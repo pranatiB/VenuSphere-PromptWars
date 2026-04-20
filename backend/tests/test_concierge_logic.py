@@ -93,20 +93,20 @@ class TestAnnouncementFeed:
         docs = [MagicMock() for _ in announcements]
         for doc, ann in zip(docs, announcements):
             doc.to_dict.return_value = ann
-        mock_db.collection.return_value.stream.return_value = iter(docs)
+        mock_db.collection.return_value.order_by.return_value.limit.return_value.stream.return_value = iter(docs)
         result = get_announcements(mock_db)
         assert len(result) == 2
 
     def test_announcement_message_present(self, mock_db):
         docs = [MagicMock()]
         docs[0].to_dict.return_value = {"message": "Game resumes in 2 minutes", "priority": "normal"}
-        mock_db.collection.return_value.stream.return_value = iter(docs)
+        mock_db.collection.return_value.order_by.return_value.limit.return_value.stream.return_value = iter(docs)
         result = get_announcements(mock_db)
         assert "message" in result[0]
         assert len(result[0]["message"]) > 0
 
     def test_empty_announcements(self, mock_db):
-        mock_db.collection.return_value.stream.return_value = iter([])
+        mock_db.collection.return_value.order_by.return_value.limit.return_value.stream.return_value = iter([])
         result = get_announcements(mock_db)
         assert result == []
 
@@ -117,14 +117,14 @@ class TestPhaseDetectionForConcierge:
     """Concierge nudge timing depends on accurate phase detection."""
 
     def test_returns_default_phase_when_no_doc(self, mock_db):
-        mock_db.collection.return_value.stream.return_value = iter([])
+        mock_db.collection.return_value.limit.return_value.stream.return_value = iter([])
         phase = get_current_phase(mock_db)
         assert phase in {"pre_event", "first_half", "halftime", "second_half", "post_event"}
 
     def test_returns_live_phase(self, mock_db):
         doc = MagicMock()
         doc.to_dict.return_value = {"current_phase": "halftime", "id": "schedule_1"}
-        mock_db.collection.return_value.stream.return_value = iter([doc])
+        mock_db.collection.return_value.limit.return_value.stream.return_value = iter([doc])
         phase = get_current_phase(mock_db)
         assert phase == "halftime"
 
@@ -132,14 +132,14 @@ class TestPhaseDetectionForConcierge:
         """Halftime is the primary Concierge activation window — must be detectable."""
         doc = MagicMock()
         doc.to_dict.return_value = {"current_phase": "halftime", "id": "s1"}
-        mock_db.collection.return_value.stream.return_value = iter([doc])
+        mock_db.collection.return_value.limit.return_value.stream.return_value = iter([doc])
         phase = get_current_phase(mock_db)
         assert phase == "halftime", "Halftime phase must be detected for Concierge to activate surge warnings"
 
     def test_post_event_phase_triggers_exit_nudge(self, mock_db):
         doc = MagicMock()
         doc.to_dict.return_value = {"current_phase": "post_event", "id": "s1"}
-        mock_db.collection.return_value.stream.return_value = iter([doc])
+        mock_db.collection.return_value.limit.return_value.stream.return_value = iter([doc])
         phase = get_current_phase(mock_db)
         assert phase == "post_event"
 

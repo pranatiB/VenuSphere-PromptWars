@@ -3,19 +3,19 @@
  * VenuSphere app bootstrap: Firebase init, routing, service worker, announcements.
  */
 
-import { initFirebase, signInAnon, watchAuthState, subscribeToDoc, subscribeToCollection } from './services/firebase-client.js';
-import { setLocale } from './utils/i18n.js';
-import { announce, showAnnouncementBanner, updateNavAria, showToast } from './utils/a11y.js';
-import { startAutopilot } from './services/autopilot-engine.js';
-import { initConcierge } from './components/concierge.js';
+import { initFirebase, signInAnon, watchAuthState, subscribeToDoc, subscribeToCollection } from '/js/services/firebase-client.js';
+import { setLocale } from '/js/utils/i18n.js';
+import { announce, showAnnouncementBanner, updateNavAria, showToast, initSkipLink } from '/js/utils/a11y.js';
+import { startAutopilot } from '/js/services/crowd-autopilot.js';
+import { initConcierge } from '/js/components/concierge.js';
 
 /** Lazy component loaders keyed by view id. */
 const COMPONENT_LOADERS = {
-  dashboard: () => import('./components/dashboard.js'),
-  map:       () => import('./components/crowd-map.js'),
-  assistant: () => import('./components/assistant.js'),
-  queue:     () => import('./components/queue-tracker.js'),
-  schedule:  () => import('./components/schedule.js'),
+  dashboard: () => import('./components/dashboard.js?v=PERFECT_FINAL'),
+  map:       () => import('./components/crowd-map.js?v=PERFECT_FINAL'),
+  assistant: () => import('./components/assistant.js?v=PERFECT_FINAL'),
+  queue:     () => import('./components/queue-tracker.js?v=PERFECT_FINAL'),
+  schedule:  () => import('./components/schedule.js?v=PERFECT_FINAL'),
 };
 
 /** Loaded component instances. */
@@ -43,60 +43,78 @@ window.addEventListener('vf:navigate', (e) => {
 
 /** ── Bootstrap ── */
 async function bootstrap() {
-  const { auth } = initFirebase();
+  try {
+    const { auth } = initFirebase();
 
-  // Detect & apply saved locale
-  const savedLocale = localStorage.getItem('vf_locale') || 'en';
-  await setLocale(savedLocale);
+    // Detect & apply saved locale
+    const savedLocale = localStorage.getItem('vf_locale') || 'en';
+    await setLocale(savedLocale);
 
-  // Apply high-contrast preference
-  if (localStorage.getItem('vf_hc') === '1') {
-    document.documentElement.classList.add('hc');
-  }
-
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  }
-
-  // Wire up nav buttons
-  document.querySelectorAll('#bottom-nav .nav-btn, #bottom-nav .nav-fab').forEach((btn) => {
-    btn.addEventListener('click', () => navigateTo(btn.dataset.view));
-  });
-
-  // High-contrast toggle
-  document.getElementById('btn-hc-toggle')?.addEventListener('click', toggleHighContrast);
-
-  // Auth
-  watchAuthState(async (user) => {
-    if (!user) {
-      try { await signInAnon(); } catch { showToast('Using demo mode — sign in for full features.', 'info'); }
+    // Apply high-contrast preference and purge cache
+    const CURRENT_VER = 'VENUSPHERE_2026_FINAL';
+    if (localStorage.getItem('vf_pwa_version') !== CURRENT_VER) {
+      console.log('[VenuSphere] Absolute Purge: Version ' + CURRENT_VER);
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem('vf_pwa_version', CURRENT_VER);
     }
-  });
 
-  // Try anon sign-in immediately
-  try { await signInAnon(); } catch { /* handled in watchAuthState */ }
+    if (localStorage.getItem('vf_hc') === '1') {
+      document.documentElement.classList.add('hc');
+    }
+
+    // Register service worker (Disabled)
+    /* 
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+    */
+
+    // Wire up nav buttons
+    document.querySelectorAll('#bottom-nav .nav-btn, #bottom-nav .nav-fab').forEach((btn) => {
+      btn.addEventListener('click', () => navigateTo(btn.dataset.view));
+    });
+
+    // High-contrast toggle
+    document.getElementById('btn-hc-toggle')?.addEventListener('click', toggleHighContrast);
+
+    // Initialize accessibility skip link
+    initSkipLink();
+
+    // Auth
+    watchAuthState(async (user) => {
+      if (!user) {
+        try { await signInAnon(); } catch { showToast('Using demo mode — sign in for full features.', 'info'); }
+      }
+    });
+
+    // Try anon sign-in immediately
+    try { await signInAnon(); } catch { /* handled in watchAuthState */ }
 
 
-  // Load initial view from URL hash
-  const hashView = window.location.hash.replace('#', '');
-  await navigateTo(COMPONENT_LOADERS[hashView] ? hashView : 'dashboard');
+    // Load initial view from URL hash
+    const hashView = window.location.hash.replace('#', '');
+    await navigateTo(COMPONENT_LOADERS[hashView] ? hashView : 'dashboard');
 
-  // Listen for announcements via Firestore onSnapshot
-  _startAnnouncementListener();
+    // Listen for announcements via Firestore onSnapshot
+    _startAnnouncementListener();
 
-  // Show current event phase
-  _watchEventPhase();
+    // Show current event phase
+    _watchEventPhase();
 
-  // Start Crowd Autopilot™ + AI Concierge
-  startAutopilot();
-  initConcierge();
-
-  // Hide loading overlay
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) {
-    overlay.classList.add('hidden');
-    setTimeout(() => overlay.remove(), 450);
+    // Start Crowd Autopilot™ + AI Concierge
+    startAutopilot();
+    initConcierge();
+  } catch (err) {
+    console.error('App bootstrap error:', err);
+    showToast('Failed to start application fully. Some features may be offline.', 'error');
+  } finally {
+    // Hide loading overlay
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+      overlay.classList.add('hidden');
+      setTimeout(() => overlay.remove(), 450);
+    }
   }
 }
 

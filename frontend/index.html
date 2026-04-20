@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/styles.css?v=20260419" />
+  <link rel="stylesheet" href="/css/styles.css?v=FINAL_BEYOND_ALL_CACHE" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -146,9 +146,11 @@
   <!-- Notification Toast Container -->
   <div id="toast-container" aria-live="polite" aria-atomic="false" role="status"></div>
 
-  <!-- Local API Keys (gitignored — never pushed) -->
-  <script src="/js/config.local.js" onerror="console.warn('config.local.js not found — using placeholder keys')"></script>
+  <!-- Emergency Cache Purge Script -->
+  <script src="/js/cache-purge.js?v=FINAL_BEYOND_ALL_CACHE"></script>
+  <!-- Production Configuration (optional) -->
+  <script src="/js/config.prod.js?v=FINAL_BEYOND_ALL_CACHE" onerror="console.warn('Production config missing. Falling back to default/local.')"></script>
   <!-- App Entry Point -->
-  <script type="module" src="/js/app.js?v=20260419c"></script>
+  <script type="module" src="/js/app.js?v=FINAL_BEYOND_ALL_CACHE"></script>
 </body>
 </html>

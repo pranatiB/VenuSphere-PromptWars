@@ -7,8 +7,8 @@
  * Powered by Crowd Autopilot™ predictions.
  */
 
-import { onPrediction, getPredictions } from '../services/autopilot-engine.js';
-import { announce } from '../utils/a11y.js';
+import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js';
+import { announce } from '/js/utils/a11y.js';
 
 let _container = null;
 let _dismissedIds = new Set();
@@ -45,11 +45,18 @@ export function destroyConcierge() {
   if (_container) _container.innerHTML = '';
 }
 
+/**
+ * Handle new predictions from Autopilot.
+ * @private
+ * @param {Array<Object>} predictions - List of active prediction objects.
+ */
 function _handlePredictions(predictions) {
   if (!_container) return;
+  if (!Array.isArray(predictions)) return;
 
   // Filter out dismissed and old predictions
   const active = predictions
+    .filter(_isValidPrediction)
     .filter(p => !_dismissedIds.has(p.id))
     .sort((a, b) => _severityRank(b.severity) - _severityRank(a.severity))
     .slice(0, _maxVisible);
@@ -65,7 +72,7 @@ function _handlePredictions(predictions) {
 
   // Add new nudges
   active.forEach((prediction, idx) => {
-    if (_container.querySelector(`[data-nudge-id="${prediction.id}"]`)) return;
+    if (_container.querySelector(_nudgeSelector(prediction.id))) return;
     const nudge = _createNudge(prediction, idx);
     _container.appendChild(nudge);
 
@@ -79,6 +86,13 @@ function _handlePredictions(predictions) {
   });
 }
 
+/**
+ * Create a DOM element for a single nudge.
+ * @private
+ * @param {Object} prediction - Prediction data.
+ * @param {number} index - Position index for animation cascading.
+ * @returns {HTMLElement} The nudge DOM element.
+ */
 function _createNudge(prediction, index) {
   const nudge = document.createElement('div');
   nudge.className = `concierge-nudge nudge-${prediction.severity}`;
@@ -92,7 +106,7 @@ function _createNudge(prediction, index) {
     ? `<span class="nudge-savings">Save ${prediction.savingsMinutes} min</span>`
     : '';
   const alternate = prediction.alternateZone
-    ? `<div class="nudge-alt">→ Try <strong>${prediction.alternateZone}</strong></div>`
+    ? `<div class="nudge-alt">→ Try <strong>${_esc(prediction.alternateZone)}</strong></div>`
     : '';
 
   nudge.innerHTML = `
@@ -124,6 +138,12 @@ function _createNudge(prediction, index) {
   return nudge;
 }
 
+/**
+ * Dismiss a nudge and tracking its ID to prevent reappearance.
+ * @private
+ * @param {string} id - The unique prediction ID.
+ * @param {HTMLElement} el - The nudge element to remove.
+ */
 function _dismiss(id, el) {
   _dismissedIds.add(id);
   try {
@@ -133,6 +153,12 @@ function _dismiss(id, el) {
   setTimeout(() => el.remove(), 350);
 }
 
+/**
+ * Get the emoji icon for a prediction type.
+ * @private
+ * @param {Object} prediction - Prediction data.
+ * @returns {string} Emoji icon.
+ */
 function _getIcon(prediction) {
   switch (prediction.type) {
     case 'surge_warning': return '⚡';
@@ -143,16 +169,64 @@ function _getIcon(prediction) {
   }
 }
 
+/**
+ * Convert severity level into a numerical rank for sorting.
+ * @private
+ * @param {string} sev - Severity level ('critical', 'warning', 'info').
+ * @returns {number} Rank value (higher is more severe).
+ */
 function _severityRank(sev) {
   return { critical: 3, warning: 2, info: 1 }[sev] || 0;
 }
 
+/**
+ * Check that a prediction has the fields this component requires.
+ * @private
+ * @param {unknown} prediction
+ * @returns {boolean}
+ */
+function _isValidPrediction(prediction) {
+  return Boolean(
+    prediction
+    && typeof prediction === 'object'
+    && typeof prediction.id === 'string'
+    && prediction.id.trim()
+    && typeof prediction.message === 'string'
+  );
+}
+
+/**
+ * Build a CSS-safe selector for matching existing nudges.
+ * @private
+ * @param {string} id
+ * @returns {string}
+ */
+function _nudgeSelector(id) {
+  if (window.CSS && typeof window.CSS.escape === 'function') {
+    return `[data-nudge-id="${window.CSS.escape(id)}"]`;
+  }
+  const safe = String(id).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return `[data-nudge-id="${safe}"]`;
+}
+
+/**
+ * Escape HTML in a string to prevent XSS.
+ * @private
+ * @param {string} str - Unsafe string.
+ * @returns {string} Escaped string.
+ */
 function _esc(str) {
   const div = document.createElement('div');
   div.textContent = str || '';
   return div.innerHTML;
 }
 
+/**
+ * Strip all HTML tags from a string.
+ * @private
+ * @param {string} str - String with potential HTML.
+ * @returns {string} Clean text.
+ */
 function _stripHtml(str) {
   return (str || '').replace(/<[^>]*>/g, '');
 }

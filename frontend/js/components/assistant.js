@@ -3,9 +3,11 @@
  * Gemini-powered AI chat assistant with contextual quick-prompt chips.
  */
 
-import { sendChatMessage } from '../services/api-client.js';
-import { announce } from '../utils/a11y.js';
-import { t } from '../utils/i18n.js';
+import { sendChatMessage } from '/js/services/api-client.js';
+import { announce, trapFocus, releaseFocusTrap } from '/js/utils/a11y.js';
+import { t } from '/js/utils/i18n.js';
+
+let _trapCleanup = null;
 
 let _sessionId = null;
 let _messagesEl = null;
@@ -87,11 +89,27 @@ export function mount(rootId) {
 
   _bindEvents();
   _checkForDeepLinkPrompt();
+  _activateFocusTrap();
 }
 
 /** Re-check for deep-link prompt on each navigation. */
 export function refresh() {
   _checkForDeepLinkPrompt();
+  _activateFocusTrap();
+}
+
+/** Activate focus trap and Escape handler for the assistant view */
+function _activateFocusTrap() {
+  const root = document.getElementById('view-assistant');
+  if (root) {
+    if (_trapCleanup) _trapCleanup();
+    _trapCleanup = trapFocus(root, () => {
+      // On escape, navigate back to dashboard by simulating a click on the dashboard nav or using hash
+      window.location.hash = 'dashboard';
+      releaseFocusTrap();
+      _trapCleanup = null;
+    });
+  }
 }
 
 function _bindEvents() {

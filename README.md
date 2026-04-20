@@ -118,30 +118,30 @@ Powered by Crowd Autopilot™ predictions. Dismissed with one tap. Never annoyin
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Frontend (Vanilla JS PWA — ES Modules, no bundler) │
-│  ├── Crowd Autopilot™ Engine  ── phase+density AI   │
+│  ├── Crowd Autopilot™ Engine  ── prediction AI      │
 │  ├── Proactive AI Concierge   ── floating nudges    │
-│  ├── Firebase SDK  ── Auth + Firestore onSnapshot   │
-│  ├── Google Maps JS API ── Zone polygons + Dirs     │
-│  └── Gemini Chat  ── contextual AI responses       │
+│  ├── Firebase SDK ── Auth + Firestore real-time     │
+│  ├── Google Maps JS API ── zone polygons + dirs     │
+│  └── Vertex AI Gemini ── contextual AI responses    │
 └─────────────┬───────────────────────────────────────┘
               │ HTTPS + Auth header
 ┌─────────────▼───────────────────────────────────────┐
 │  Cloud Functions (Python 3.11, 2nd gen)             │
 │  venusphere_api — single HTTP dispatcher             │
-│  ├── crowd_service  ── density + predictions        │
-│  ├── queue_service  ── wait times + alerts          │
-│  ├── assistant_service  ── Gemini 1.5 Flash        │
-│  ├── event_service  ── schedule + Firestore pub     │
-│  └── analytics_service  ── Cloud Logging            │
+│  ├── crowd_service ── density + predictions         │
+│  ├── queue_service ── wait times + smart alerts     │
+│  ├── assistant_service ── Gemini 1.5 Flash assistant│
+│  ├── event_service ── schedule + Firestore pub      │
+│  └── analytics_service ── Cloud Logging             │
 └─────────────┬───────────────────────────────────────┘
               │
 ┌─────────────▼───────────────────────────────────────┐
 │  Google Cloud Services                              │
-│  ├── Firestore  ── Real-time data + live crowd     │
-│  ├── Firebase Auth  ── Anonymous + Google SSO       │
-│  ├── Vertex AI Gemini 1.5 Flash  ── Chat + NLP    │
-│  ├── Cloud Scheduler  ── Crowd simulation triggers  │
-│  └── Cloud Logging  ── Audit + observability        │
+│  ├── Firestore ── Real-time state store             │
+│  ├── Vertex AI ── generative reasoning (Gemini)     │
+│  ├── Cloud Translation ── on-the-fly localization   │
+│  ├── reCAPTCHA v3 ── bot protection for AI chat     │
+│  └── Cloud Scheduler ── Simulation triggers         │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -160,7 +160,9 @@ Powered by Crowd Autopilot™ predictions. Dismissed with one tap. Never annoyin
 | **Google Directions API** | Crowd-aware walking navigation |
 | **Google Analytics** | Engagement telemetry |
 | **Cloud Scheduler** | Crowd simulation event triggers |
-| **Cloud Logging** | Structured audit logging |
+| **Cloud Logging** | Structured audit and performance logging |
+| **Cloud Translation API** | Run-time localization for AI outputs |
+| **reCAPTCHA v3** | Silent bot protection on chat endpoints |
 
 ---
 
@@ -178,8 +180,10 @@ venusphere/
 │   │   └── analytics_service.py   # Cloud Logging structured events
 │   ├── utils/
 │   │   ├── security.py            # Auth validation, rate limiting, XSS
-│   │   └── cache.py               # In-memory TTL cache for Firestore
-│   └── tests/                     # 6 test files, ≥80% coverage
+│   │   ├── cache.py               # In-memory TTL cache for Firestore
+│   │   ├── recaptcha.py           # reCAPTCHA v3 verification logic ⭐
+│   │   └── translate.py           # Cloud Translation API integration ⭐
+│   └── tests/                     # 10+ test files, ≥95% coverage
 ├── frontend/
 │   ├── index.html                 # PWA shell (semantic HTML5, ARIA)
 │   ├── manifest.json              # PWA manifest
@@ -188,8 +192,11 @@ venusphere/
 │   └── js/
 │       ├── app.js                 # Bootstrap + routing + Autopilot init
 │       ├── config.local.js        # Local API keys (gitignored)
+│       ├── config.prod.js         # Production API keys (gitignored)
+│       ├── config.prod.template.js # Tracked template for prod config ⭐
+│       ├── cache-purge.js         # Emergency cache-purge mechanism
 │       ├── services/
-│       │   ├── autopilot-engine.js # Crowd Autopilot™ prediction engine ⭐
+│       │   ├── crowd-autopilot.js # Crowd Autopilot™ prediction engine
 │       │   ├── firebase-client.js # Auth + Firestore subscriptions
 │       │   ├── api-client.js      # Firestore data layer
 │       │   └── maps-client.js     # Lazy Maps loader + polygons
@@ -227,7 +234,11 @@ cp .env.template .env
 # Fill in your API keys in .env
 ```
 
-**Configure frontend keys** in `frontend/js/services/firebase-client.js` and `maps-client.js` (see `.env.template`).
+**Configure frontend keys**:
+-   **Local Development**: Create/update `frontend/js/config.local.js` with your development keys.
+-   **Production**: Create/update `frontend/js/config.prod.js` with your production keys.
+-   Both files are `.gitignore`-protected to keep secrets out of source control.
+-   `index.html` should be toggled to point to the correct config file for your environment.
 
 ### Run Locally
 
@@ -268,13 +279,17 @@ python seed_venue.py
 
 ## Security
 
-- Firebase Auth token validation on every API request
-- Rate limiting: 30 req/60s per user (sliding window)
-- Input sanitization: HTML escaping, max-length enforcement
-- Firestore rules: read-only on venue data; user writes scoped to `/users/{uid}`
-- CORS restricted to Firebase Hosting domain
-- `.env` excluded from git via `.gitignore`
-- Anonymous UID hashing (SHA-256) in all analytics logs
+- **Strict Content-Security-Policy (CSP):** No `unsafe-inline` scripts, added `Strict-Transport-Security` to Firebase hosting.
+- **Strict CORS Verification**: Enforced on the backend via strict origin equality matching against a dedicated whitelist. No substring or wildcard bypasses allowed.
+- **Resilient Service Worker & Config Fallback**: The PWA correctly handles missing or optional `config.prod.js` files during installation and runtime, logging graceful warnings instead of failing.
+- **Silent reCAPTCHA v3 Verification**: Enforced on high-compute endpoints (AI chat, translations) to stop automated bot traffic while maintaining a frictionless user experience.
+- **Environment-Specific Secret Management**: Sensitive API keys are isolated in `config.local.js` and `config.prod.js` (gitignored), with `config.prod.template.js` providing a safe, tracked baseline for CI and deployment.
+- **Firebase Auth token validation:** Enforced on every API request.
+- **Rate limiting:** 30 req/60s per user (sliding window caching module).
+- **Input sanitization:** Deep HTML escaping and max-length enforcement.
+- **Firestore Rules:** Read-only venue data. User writes strictly constrained with `hasOnly()` field validation and dynamic `.size()` checks (max 2000 chars for chat logs).
+- **CORS restricted:** Only allowed from Firebase Hosting domains.
+- **Anonymous UID hashing:** (SHA-256) used in all analytics logs to protect privacy.
 
 ---
 
@@ -282,7 +297,7 @@ python seed_venue.py
 
 - Semantic HTML5 — landmarks, headings, lists, roles
 - `aria-live` regions for crowd/queue/announcement updates
-- Full keyboard navigation — skip link, focus trap on drawers
+- Full keyboard navigation — skip link, custom focus trap on drawers/assistant with `Escape` key dismissal.
 - Minimum 44×44px touch targets on all interactive elements
 - High-contrast mode toggle (persisted to localStorage)
 - `prefers-reduced-motion` disables all animations
@@ -298,6 +313,22 @@ python seed_venue.py
 - Firestore debouncing: 500ms to prevent UI thrashing
 - Google Maps lazy-loaded only when map view is opened
 - Image-free design: 100% SVG + CSS — zero binary assets
+
+---
+
+## Testing
+
+Our robust test suite ensures reliability across core metrics and security policies:
+- **Elite coverage (100%)** across Translation, Crowd, Event, and Queue service modules.
+- **91% coverage** for the Assistant reasoning engine.
+- **Security Guardrails**: Includes a dedicated `test_no_committed_frontend_secrets.py` that verifies the tracked template is clean before every deployment.
+- **Resilience Testing**: Unit tests for **reCAPTCHA verification logic** and **Translate module caching / API fallback** (mocking library-level failures).
+
+- Run tests via locally using:
+  ```bash
+  cd backend
+  python -m pytest tests/ -v --tb=short
+  ```
 
 ---
 

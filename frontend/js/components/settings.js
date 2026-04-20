@@ -3,10 +3,10 @@
  * User preferences, accessibility options, theme, language, and auth management.
  */
 
-import { getPreferences, savePreferences } from '../services/api-client.js';
-import { signInWithGoogle, signOutUser } from '../services/firebase-client.js';
-import { setLocale, getLocale } from '../utils/i18n.js';
-import { announce, showToast } from '../utils/a11y.js';
+import { getPreferences, savePreferences } from '/js/services/api-client.js';
+import { currentUser, signOutUser, signInWithGoogle, writeDoc } from '/js/services/firebase-client.js';
+import { setLocale, getLocale } from '/js/utils/i18n.js';
+import { showToast, announce } from '/js/utils/a11y.js';
 
 let _root = null;
 let _prefs = {

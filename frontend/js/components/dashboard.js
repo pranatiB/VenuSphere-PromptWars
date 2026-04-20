@@ -4,11 +4,11 @@
  * proactive prediction cards, quick actions, and impact metrics.
  */
 
-import { subscribeToDoc, subscribeToCollection } from '../services/firebase-client.js';
-import { getAlerts, getCrowdData } from '../services/api-client.js';
-import { onPrediction, getPredictions, getImpactMetrics } from '../services/autopilot-engine.js';
-import { announce, showToast } from '../utils/a11y.js';
-import { t } from '../utils/i18n.js';
+import { subscribeToDoc, subscribeToCollection } from '/js/services/firebase-client.js';
+import { getAlerts, getCrowdData } from '/js/services/api-client.js';
+import { onPrediction, getPredictions, getImpactMetrics } from '/js/services/crowd-autopilot.js';
+import { announce, showToast } from '/js/utils/a11y.js';
+import { t } from '/js/utils/i18n.js';
 
 let _root = null;
 let _unsubs = [];

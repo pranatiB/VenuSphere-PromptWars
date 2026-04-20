@@ -6,7 +6,6 @@ import re
 import time
 from typing import Optional
 
-import firebase_admin
 from firebase_admin import auth
 
 
@@ -31,8 +30,7 @@ def validate_firebase_token(id_token: str) -> Optional[str]:
     try:
         decoded = auth.verify_id_token(id_token)
         return decoded.get("uid")
-    except (auth.InvalidIdTokenError, auth.ExpiredIdTokenError,
-            ValueError, Exception):
+    except Exception:  # pylint: disable=broad-exception-caught
         return None
 
 

@@ -1498,3 +1498,6 @@ ul, ol { list-style: none; }
 .mb-6 { margin-bottom: var(--sp-6); }
 .mt-3 { margin-top: var(--sp-3); }
 .mt-4 { margin-top: var(--sp-4); }
+ 
+ 
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }

@@ -90,6 +90,33 @@ def test_predict_density_clamps_at_zero(mock_db):
     result = predict_density("stand_north", "halftime", 15, mock_db)
     assert result["predicted_density"] >= 0.0
 
+def test_predict_density_various_phases(mock_db):
+    """Test every branch of the prediction heuristic logic."""
+    def setup_mock(zone_id, density, phase):
+        doc = MagicMock(); doc.exists = True
+        doc.to_dict.return_value = {"zone_id": zone_id, "density": density, "phase": phase}
+        mock_db.collection.return_value.document.return_value.get.return_value = doc
+
+    # first_half + 30m + food_court
+    setup_mock("food_court_a", 0.4, "first_half")
+    res = predict_density("food_court_a", "first_half", 30, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.4 + 0.3
+
+    # halftime + 15m + non-food
+    setup_mock("gate_north", 0.3, "halftime")
+    res = predict_density("gate_north", "halftime", 15, mock_db)
+    assert res["predicted_density"] == 0.5  # 0.3 + 0.2
+
+    # second_half + 30m + gate
+    setup_mock("gate_south", 0.5, "second_half")
+    res = predict_density("gate_south", "second_half", 30, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.5 + 0.2
+
+    # post_event + gate
+    setup_mock("gate_east", 0.8, "post_event")
+    res = predict_density("gate_east", "post_event", 15, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.8 - 0.1
+
 
 def test_process_checkin_increments_density(mock_db):
     doc = MagicMock()
@@ -111,3 +138,48 @@ def test_process_checkin_missing_zone(mock_db):
     mock_db.collection.return_value.document.return_value.get.return_value = doc
     result = process_checkin("bad_zone", "uid", "pre_event", mock_db)
     assert result is False
+
+
+# ── cache-hit branches ─────────────────────────────────────────────────────────
+
+def test_get_zone_density_cache_hit_returns_cached(sample_crowd_doc, mock_db):
+    """Line 41: Cached return — Firestore must NOT be called a second time."""
+    mock_db.collection.return_value.document.return_value.get.return_value = sample_crowd_doc
+    first = get_zone_density("food_court_a", "halftime", mock_db)
+    second = get_zone_density("food_court_a", "halftime", mock_db)
+    assert first == second
+    assert mock_db.collection.return_value.document.return_value.get.call_count == 1
+
+
+def test_get_all_zones_density_cache_hit(sample_zones, mock_db):
+    """Line 85: Second call to get_all_zones_density must use cache."""
+    mock_db.collection.return_value.where.return_value.stream.return_value = iter(sample_zones)
+    first = get_all_zones_density("pre_event", mock_db)
+    # Replace stream with empty iterator — cache should prevent using it
+    mock_db.collection.return_value.where.return_value.stream.return_value = iter([])
+    second = get_all_zones_density("pre_event", mock_db)
+    assert first == second
+    assert len(second) > 0
+
+
+def test_get_density_label_out_of_range_returns_unknown():
+    """Line 24: density > 1.01 or exactly 1.01 falls through all ranges → 'unknown'."""
+    assert _get_density_label(1.5) == "unknown"
+    assert _get_density_label(-0.1) == "unknown"
+
+
+def test_get_zone_density_timestamp_isoformat(mock_db):
+    """Exercise the isoformat branch on the timestamp field."""
+    from datetime import datetime, timezone
+    doc = MagicMock()
+    doc.exists = True
+    doc.to_dict.return_value = {
+        "zone_id": "gate_north",
+        "density": 0.6,
+        "trend": "stable",
+        "phase": "pre_event",
+        "timestamp": datetime(2026, 4, 19, tzinfo=timezone.utc),
+    }
+    mock_db.collection.return_value.document.return_value.get.return_value = doc
+    result = get_zone_density("gate_north", "pre_event", mock_db)
+    assert "2026" in result["timestamp"]
