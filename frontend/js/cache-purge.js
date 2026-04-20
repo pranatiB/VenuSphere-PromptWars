@@ -4,7 +4,7 @@
  * This ensures users always have the latest logic in a production environment.
  */
 (function() {
-  const CURRENT_VER = '20260420_FINAL';
+  const CURRENT_VER = 'VENUSPHERE_2026_FINAL';
   if (localStorage.getItem('vf_pwa_version') !== CURRENT_VER) {
     console.log('[VenuSphere] New version detected (' + CURRENT_VER + '). Purging caches...');
     

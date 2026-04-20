@@ -51,7 +51,7 @@ async function bootstrap() {
     await setLocale(savedLocale);
 
     // Apply high-contrast preference and purge cache
-    const CURRENT_VER = 'PERFECT_FINAL';
+    const CURRENT_VER = 'VENUSPHERE_2026_FINAL';
     if (localStorage.getItem('vf_pwa_version') !== CURRENT_VER) {
       console.log('[VenuSphere] Absolute Purge: Version ' + CURRENT_VER);
       localStorage.clear();
