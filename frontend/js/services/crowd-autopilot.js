@@ -11,6 +11,8 @@
 
 import { subscribeToCollection } from '/js/services/firebase-client.js';
 
+const PREDICTION_TICK_MS = 30000;
+
 // ── Phase-Aware Prediction Templates ──
 // Each phase produces a CURATED set of diverse predictions, not generic spam.
 // Only the single most critical zone per category is surfaced.
@@ -126,9 +128,11 @@ export function startAutopilot() {
   _started = true;
 
   const unsubCrowd = subscribeToCollection('crowd_density', (items) => {
-    items.forEach(item => {
+    if (!Array.isArray(items)) return;
+    items.forEach((item) => {
+      if (!item?.zone_id) return;
       _zoneDensities[item.zone_id] = {
-        density: item.density || 0,
+        density: _toNumber(item.density, 0),
         trend: item.trend || 'stable',
         timestamp: Date.now(),
       };
@@ -137,9 +141,11 @@ export function startAutopilot() {
   _unsubs.push(unsubCrowd);
 
   const unsubQueue = subscribeToCollection('queue_times', (items) => {
-    items.forEach(item => {
+    if (!Array.isArray(items)) return;
+    items.forEach((item) => {
+      if (!item?.stall_id) return;
       _queueTimes[item.stall_id] = {
-        wait: item.wait_minutes || 0,
+        wait: _toNumber(item.wait_minutes, 0),
         trend: item.trend || 'stable',
       };
     });
@@ -147,6 +153,7 @@ export function startAutopilot() {
   _unsubs.push(unsubQueue);
 
   const unsubPhase = subscribeToCollection('crowd_summary', (items) => {
+    if (!Array.isArray(items)) return;
     const live = items.find(i => i.id === 'live');
     if (live && live.current_phase && _phase !== live.current_phase) {
       _phase = live.current_phase;
@@ -157,7 +164,7 @@ export function startAutopilot() {
   _unsubs.push(unsubPhase);
 
   _runPredictionCycle();
-  _tickInterval = setInterval(_runPredictionCycle, 30000);
+  _tickInterval = setInterval(_runPredictionCycle, PREDICTION_TICK_MS);
 }
 
 /**
@@ -274,6 +281,18 @@ function _defaultDensity(zoneId) {
     main_concourse: 0.45, stand_north: 0.30, stand_south: 0.28,
   };
   return defaults[zoneId] || 0.35;
+}
+
+/**
+ * Normalize a numeric value with fallback.
+ * @private
+ * @param {unknown} value
+ * @param {number} fallback
+ * @returns {number}
+ */
+function _toNumber(value, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 /**

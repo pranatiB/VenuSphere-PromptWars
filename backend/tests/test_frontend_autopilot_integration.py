@@ -31,3 +31,16 @@ def test_concierge_escapes_alternate_zone_markup():
     """Alternate zone text must be escaped before DOM insertion to prevent XSS."""
     source = _read("frontend/js/components/concierge.js")
     assert "${_esc(prediction.alternateZone)}" in source
+
+
+def test_concierge_validates_prediction_shape():
+    """Concierge should ignore malformed prediction payload entries."""
+    source = _read("frontend/js/components/concierge.js")
+    assert ".filter(_isValidPrediction)" in source
+    assert "function _isValidPrediction(prediction)" in source
+
+
+def test_autopilot_snapshot_handlers_guard_payload_types():
+    """Autopilot listeners should validate snapshot payloads before iteration."""
+    source = _read("frontend/js/services/crowd-autopilot.js")
+    assert source.count("if (!Array.isArray(items)) return;") >= 3
