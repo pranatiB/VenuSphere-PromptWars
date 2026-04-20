@@ -6,7 +6,7 @@
 
 const MAPS_CDN = 'https://maps.googleapis.com/maps/api/js';
 /** Replace with your Google Maps API key. */
-const MAPS_API_KEY = window.VENUSPHERE_MAPS_KEY || 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
+const MAPS_API_KEY = window.VENUSPHERE_MAPS_KEY || 'REPLACE_MAPS_API_KEY';
 
 let _mapsLoaded = false;
 let _loadPromise = null;
@@ -36,7 +36,7 @@ export function loadGoogleMaps() {
   if (_loadPromise) return _loadPromise;
 
   _loadPromise = new Promise((resolve, reject) => {
-    if (MAPS_API_KEY.startsWith('REPLACE')) {
+    if (!MAPS_API_KEY || MAPS_API_KEY.startsWith('REPLACE')) {
       reject(new Error('Google Maps API key not configured'));
       return;
     }

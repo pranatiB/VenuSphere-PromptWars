@@ -1,22 +1,37 @@
 """Google Cloud Translation API wrapper with local LRU caching."""
 
 import logging
-from typing import Optional
+from types import SimpleNamespace
+from typing import Optional, Any
 
-from google.cloud import translate_v2 as translate
 from utils.cache import get_cached, set_cached
 from services.analytics_service import log_performance
 
 _logger = logging.getLogger("venusphere")
 _translate_client = None
 
+try:
+    # Preferred (google-cloud-translate v2 compatibility surface).
+    from google.cloud import translate_v2 as translate  # type: ignore
+except Exception:  # pylint: disable=broad-exception-caught
+    try:
+        # Fallback import path used by some environments.
+        from google.cloud import translate as translate  # type: ignore
+    except Exception:  # pylint: disable=broad-exception-caught
+        # Keep a patchable shim so tests can still monkeypatch translate.Client.
+        translate = SimpleNamespace(Client=None)
 
-def _get_client() -> Optional[translate.Client]:
+
+def _get_client() -> Optional[Any]:
     """Lazy initialize the translation client to reduce cold-start."""
     global _translate_client  # pylint: disable=global-statement
     if _translate_client is None:
+        client_cls = getattr(translate, "Client", None)
+        if client_cls is None:
+            _logger.warning("Google Cloud Translate client is unavailable in this runtime.")
+            return None
         try:
-            _translate_client = translate.Client()
+            _translate_client = client_cls()
         except Exception as exc:  # pylint: disable=broad-exception-caught
             _logger.warning("Could not initialize translate client (likely missing credentials): %s", exc)
             return None

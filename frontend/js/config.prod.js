@@ -1,16 +1,20 @@
 /**
  * config.prod.js
- * Production configuration — sets API keys for the live deployment.
+ * Production runtime configuration.
+ *
+ * IMPORTANT:
+ * - Do not commit live secrets/keys to source control.
+ * - Replace REPLACE_* placeholders during deployment.
  */
-window.VENUSPHERE_MAPS_KEY = 'AIzaSyAz1Da0uRTdsyugI1oWsenwxjLQXk96ItA';
-window.RECAPTCHA_SITE_KEY = "6LeusL8sAAAAAFP_OlhRsTYeN-tmGETuQ2xsktvf";
+window.VENUSPHERE_MAPS_KEY = "REPLACE_MAPS_API_KEY";
+window.RECAPTCHA_SITE_KEY = "REPLACE_RECAPTCHA_SITE_KEY";
 
 window.FIREBASE_CONFIG = {
-  apiKey: "AIzaSyA__p8G18nteiZjTYiQf5aOP_wceb3qRnE",
-  authDomain: "venueflow-promptwars-apr2026.firebaseapp.com",
-  projectId: "venueflow-promptwars-apr2026",
-  storageBucket: "venueflow-promptwars-apr2026.firebasestorage.app",
-  messagingSenderId: "872453960970",
-  appId: "1:872453960970:web:e23359d714eecddd68b6f3",
-  measurementId: "G-DMGQVXDR2D"
+  apiKey: "REPLACE_FIREBASE_API_KEY",
+  authDomain: "REPLACE_FIREBASE_AUTH_DOMAIN",
+  projectId: "REPLACE_FIREBASE_PROJECT_ID",
+  storageBucket: "REPLACE_FIREBASE_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_FIREBASE_MESSAGING_SENDER_ID",
+  appId: "REPLACE_FIREBASE_APP_ID",
+  measurementId: "REPLACE_FIREBASE_MEASUREMENT_ID"
 };
