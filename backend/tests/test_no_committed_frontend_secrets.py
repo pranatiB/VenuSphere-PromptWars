@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_FILE = REPO_ROOT / "frontend/js/config.prod.js"
+CONFIG_FILE = REPO_ROOT / "frontend/js/config.prod.template.js"
 
 
 def test_prod_config_uses_placeholders_not_live_keys():

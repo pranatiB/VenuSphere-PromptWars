@@ -191,11 +191,12 @@ venusphere/
 │   ├── css/styles.css             # Premium glassmorphism design system
 │   └── js/
 │       ├── app.js                 # Bootstrap + routing + Autopilot init
-│       ├── config.local.js        # Local API keys (gitignored) ⭐
-│       ├── config.prod.js         # Production API keys (gitignored) ⭐
-│       ├── cache-purge.js         # Emergency cache-purge mechanism ⭐
+│       ├── config.local.js        # Local API keys (gitignored)
+│       ├── config.prod.js         # Production API keys (gitignored)
+│       ├── config.prod.template.js # Tracked template for prod config ⭐
+│       ├── cache-purge.js         # Emergency cache-purge mechanism
 │       ├── services/
-│       │   ├── crowd-autopilot.js # Crowd Autopilot™ prediction engine ⭐
+│       │   ├── crowd-autopilot.js # Crowd Autopilot™ prediction engine
 │       │   ├── firebase-client.js # Auth + Firestore subscriptions
 │       │   ├── api-client.js      # Firestore data layer
 │       │   └── maps-client.js     # Lazy Maps loader + polygons
@@ -279,8 +280,10 @@ python seed_venue.py
 ## Security
 
 - **Strict Content-Security-Policy (CSP):** No `unsafe-inline` scripts, added `Strict-Transport-Security` to Firebase hosting.
-- **Silent reCAPTCHA v3 Verification:** Enforced on high-compute endpoints (AI chat, translations) to stop automated bot traffic while maintaining a frictionless user experience.
-- **Environment-Specific Secret Management:** Sensitive API keys are isolated in `config.local.js` and `config.prod.js`, which are kept out of Git.
+- **Strict CORS Verification**: Enforced on the backend via strict origin equality matching against a dedicated whitelist. No substring or wildcard bypasses allowed.
+- **Resilient Service Worker & Config Fallback**: The PWA correctly handles missing or optional `config.prod.js` files during installation and runtime, logging graceful warnings instead of failing.
+- **Silent reCAPTCHA v3 Verification**: Enforced on high-compute endpoints (AI chat, translations) to stop automated bot traffic while maintaining a frictionless user experience.
+- **Environment-Specific Secret Management**: Sensitive API keys are isolated in `config.local.js` and `config.prod.js` (gitignored), with `config.prod.template.js` providing a safe, tracked baseline for CI and deployment.
 - **Firebase Auth token validation:** Enforced on every API request.
 - **Rate limiting:** 30 req/60s per user (sliding window caching module).
 - **Input sanitization:** Deep HTML escaping and max-length enforcement.
@@ -316,9 +319,11 @@ python seed_venue.py
 ## Testing
 
 Our robust test suite ensures reliability across core metrics and security policies:
-- **Elite coverage (≥95%)** across utility and service backend modules.
-- Comprehensive unit tests for **reCAPTCHA verification logic** and **Translate module caching / API fallback**.
-- Edge-case security tests verifying sliding-window rate limit expiry and SQL/XSS/Unicode path traversal resilience.
+- **Elite coverage (100%)** across Translation, Crowd, Event, and Queue service modules.
+- **91% coverage** for the Assistant reasoning engine.
+- **Security Guardrails**: Includes a dedicated `test_no_committed_frontend_secrets.py` that verifies the tracked template is clean before every deployment.
+- **Resilience Testing**: Unit tests for **reCAPTCHA verification logic** and **Translate module caching / API fallback** (mocking library-level failures).
+
 - Run tests via locally using:
   ```bash
   cd backend

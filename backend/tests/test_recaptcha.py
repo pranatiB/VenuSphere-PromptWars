@@ -38,6 +38,16 @@ def test_valid_token_high_score(mock_urlopen, mock_env):
 
 
 @patch("utils.recaptcha.urllib.request.urlopen")
+def test_verify_recaptcha_network_error(mock_request):
+    """Line 70-73: Fail closed on network/urllib errors."""
+    with patch("os.environ.get", return_value="secret_key"):
+        with patch("urllib.request.urlopen", side_effect=Exception("Connection reset")):
+            is_valid, score = verify_recaptcha("token123", "action")
+            assert is_valid is False
+            assert score == 0.0
+
+
+@patch("utils.recaptcha.urllib.request.urlopen")
 def test_valid_token_low_score(mock_urlopen, mock_env):
     mock_response = MagicMock()
     mock_response.read.return_value = b'{"success": true, "action": "chat_send", "score": 0.2}'

@@ -17,6 +17,8 @@ _ALLOWED_ORIGINS = [
     os.environ.get("CORS_ORIGIN", "https://venusphere-promptwars-apr2026.web.app"),
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
 ]
 
 
@@ -42,8 +44,8 @@ def _cors_headers(origin: str = None) -> dict:
 
     # If the request provides an Origin, check if it's in our allowed list
     if origin:
-        # Match production URL or any localhost/127.0.0.1 variation
-        if origin in _ALLOWED_ORIGINS or "localhost" in origin or "127.0.0.1" in origin:
+        # Match exactly against our allowed list
+        if origin in _ALLOWED_ORIGINS:
             effective_origin = origin
 
     return {

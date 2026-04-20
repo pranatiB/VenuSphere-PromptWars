@@ -6,6 +6,7 @@ from services.event_service import (
     get_current_phase,
     get_schedule,
     get_upcoming_alerts,
+    get_announcements,
     publish_announcement,
     advance_phase,
 )
@@ -50,13 +51,25 @@ def test_get_schedule_returns_data(mock_db):
 def test_get_upcoming_alerts_sorted_by_priority(mock_db):
     alert_docs = [
         MagicMock(**{"to_dict.return_value": {"phase": "halftime", "priority": "low", "title": "A"}}),
+        MagicMock(**{"to_dict.return_value": {"phase": "halftime", "priority": "emergency", "title": "EVAC"}}),
         MagicMock(**{"to_dict.return_value": {"phase": "halftime", "priority": "high", "title": "B"}}),
         MagicMock(**{"to_dict.return_value": {"phase": "halftime", "priority": "medium", "title": "C"}}),
     ]
     mock_db.collection.return_value.where.return_value.stream.return_value = iter(alert_docs)
     alerts = get_upcoming_alerts("halftime", mock_db)
     priorities = [a["priority"] for a in alerts]
-    assert priorities[0] == "high"
+    assert priorities[0] == "emergency"
+    assert priorities[1] == "high"
+
+def test_get_announcements_returns_list(mock_db):
+    ann_docs = [
+        MagicMock(**{"to_dict.return_value": {"message": "Msg 1"}}),
+        MagicMock(**{"to_dict.return_value": {"message": "Msg 2"}}),
+    ]
+    mock_db.collection.return_value.order_by.return_value.limit.return_value.stream.return_value = iter(ann_docs)
+    result = get_announcements(mock_db, limit=2)
+    assert len(result) == 2
+    assert result[0]["message"] == "Msg 1"
 
 
 def test_publish_announcement_creates_doc(mock_db):

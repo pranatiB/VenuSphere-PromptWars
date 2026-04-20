@@ -148,8 +148,8 @@
 
   <!-- Emergency Cache Purge Script -->
   <script src="/js/cache-purge.js?v=FINAL_BEYOND_ALL_CACHE"></script>
-  <!-- Production Configuration -->
-  <script src="/js/config.prod.js?v=FINAL_BEYOND_ALL_CACHE"></script>
+  <!-- Production Configuration (optional) -->
+  <script src="/js/config.prod.js?v=FINAL_BEYOND_ALL_CACHE" onerror="console.warn('Production config missing. Falling back to default/local.')"></script>
   <!-- App Entry Point -->
   <script type="module" src="/js/app.js?v=FINAL_BEYOND_ALL_CACHE"></script>
 </body>

@@ -90,6 +90,33 @@ def test_predict_density_clamps_at_zero(mock_db):
     result = predict_density("stand_north", "halftime", 15, mock_db)
     assert result["predicted_density"] >= 0.0
 
+def test_predict_density_various_phases(mock_db):
+    """Test every branch of the prediction heuristic logic."""
+    def setup_mock(zone_id, density, phase):
+        doc = MagicMock(); doc.exists = True
+        doc.to_dict.return_value = {"zone_id": zone_id, "density": density, "phase": phase}
+        mock_db.collection.return_value.document.return_value.get.return_value = doc
+
+    # first_half + 30m + food_court
+    setup_mock("food_court_a", 0.4, "first_half")
+    res = predict_density("food_court_a", "first_half", 30, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.4 + 0.3
+
+    # halftime + 15m + non-food
+    setup_mock("gate_north", 0.3, "halftime")
+    res = predict_density("gate_north", "halftime", 15, mock_db)
+    assert res["predicted_density"] == 0.5  # 0.3 + 0.2
+
+    # second_half + 30m + gate
+    setup_mock("gate_south", 0.5, "second_half")
+    res = predict_density("gate_south", "second_half", 30, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.5 + 0.2
+
+    # post_event + gate
+    setup_mock("gate_east", 0.8, "post_event")
+    res = predict_density("gate_east", "post_event", 15, mock_db)
+    assert res["predicted_density"] == 0.7  # 0.8 - 0.1
+
 
 def test_process_checkin_increments_density(mock_db):
     doc = MagicMock()

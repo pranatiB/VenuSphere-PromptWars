@@ -26,6 +26,5 @@ frontend/js/config.local.js
 frontend/js/config.prod.js
 
 
-# OS
-.DS_Store
-Thumbs.db
+# Coverage
+.coverage

@@ -32,10 +32,25 @@ const STATIC_ASSETS = [
 
 const API_PATTERNS = ['/api/', 'googleapis.com', 'firebaseio.com'];
 
-/** Install: pre-cache static shell. */
+/** Install: pre-cache static shell with resilience. */
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_VERSION).then(async (cache) => {
+      console.log('[VenuSphere SW] Installing resilient cache...');
+      // Fetch each asset individually to avoid failing the whole cache on one missing file
+      const assetPromises = STATIC_ASSETS.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            return cache.put(url, response);
+          }
+          console.warn(`[VenuSphere SW] Skipping optional asset (404): ${url}`);
+        } catch (err) {
+          console.error(`[VenuSphere SW] Failed to fetch asset: ${url}`, err);
+        }
+      });
+      return Promise.all(assetPromises);
+    })
   );
   self.skipWaiting();
 });
