@@ -7,7 +7,7 @@
  * Powered by Crowd Autopilot™ predictions.
  */
 
-import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js?v=20260420_FINAL';
+import { onPrediction, getPredictions } from '/js/services/crowd-autopilot.js';
 import { announce } from '/js/utils/a11y.js';
 
 let _container = null;
@@ -52,9 +52,11 @@ export function destroyConcierge() {
  */
 function _handlePredictions(predictions) {
   if (!_container) return;
+  if (!Array.isArray(predictions)) return;
 
   // Filter out dismissed and old predictions
   const active = predictions
+    .filter(_isValidPrediction)
     .filter(p => !_dismissedIds.has(p.id))
     .sort((a, b) => _severityRank(b.severity) - _severityRank(a.severity))
     .slice(0, _maxVisible);
@@ -70,7 +72,7 @@ function _handlePredictions(predictions) {
 
   // Add new nudges
   active.forEach((prediction, idx) => {
-    if (_container.querySelector(`[data-nudge-id="${prediction.id}"]`)) return;
+    if (_container.querySelector(_nudgeSelector(prediction.id))) return;
     const nudge = _createNudge(prediction, idx);
     _container.appendChild(nudge);
 
@@ -104,7 +106,7 @@ function _createNudge(prediction, index) {
     ? `<span class="nudge-savings">Save ${prediction.savingsMinutes} min</span>`
     : '';
   const alternate = prediction.alternateZone
-    ? `<div class="nudge-alt">→ Try <strong>${prediction.alternateZone}</strong></div>`
+    ? `<div class="nudge-alt">→ Try <strong>${_esc(prediction.alternateZone)}</strong></div>`
     : '';
 
   nudge.innerHTML = `
@@ -175,6 +177,36 @@ function _getIcon(prediction) {
  */
 function _severityRank(sev) {
   return { critical: 3, warning: 2, info: 1 }[sev] || 0;
+}
+
+/**
+ * Check that a prediction has the fields this component requires.
+ * @private
+ * @param {unknown} prediction
+ * @returns {boolean}
+ */
+function _isValidPrediction(prediction) {
+  return Boolean(
+    prediction
+    && typeof prediction === 'object'
+    && typeof prediction.id === 'string'
+    && prediction.id.trim()
+    && typeof prediction.message === 'string'
+  );
+}
+
+/**
+ * Build a CSS-safe selector for matching existing nudges.
+ * @private
+ * @param {string} id
+ * @returns {string}
+ */
+function _nudgeSelector(id) {
+  if (window.CSS && typeof window.CSS.escape === 'function') {
+    return `[data-nudge-id="${window.CSS.escape(id)}"]`;
+  }
+  const safe = String(id).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return `[data-nudge-id="${safe}"]`;
 }
 
 /**

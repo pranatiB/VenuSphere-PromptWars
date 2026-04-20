@@ -6,7 +6,7 @@
 
 import { subscribeToDoc, subscribeToCollection } from '/js/services/firebase-client.js';
 import { getAlerts, getCrowdData } from '/js/services/api-client.js';
-import { onPrediction, getPredictions, getImpactMetrics } from '/js/services/crowd-autopilot.js?v=20260420_B';
+import { onPrediction, getPredictions, getImpactMetrics } from '/js/services/crowd-autopilot.js';
 import { announce, showToast } from '/js/utils/a11y.js';
 import { t } from '/js/utils/i18n.js';
 
